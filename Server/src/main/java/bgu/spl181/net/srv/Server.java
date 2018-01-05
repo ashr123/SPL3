@@ -1,7 +1,7 @@
 package bgu.spl181.net.srv;
 
 import bgu.spl181.net.api.MessageEncoderDecoder;
-import bgu.spl181.net.api.MessagingProtocol;
+import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 
 import java.io.Closeable;
 import java.util.function.Supplier;
@@ -18,7 +18,7 @@ public interface Server<T> extends Closeable
 	 * @return A new Thread per client server
 	 */
 	static <T> Server<T> threadPerClient(int port,
-	                                     Supplier<MessagingProtocol<T>> protocolFactory,
+	                                     Supplier<BidiMessagingProtocol<T>> protocolFactory,
 	                                     Supplier<MessageEncoderDecoder<T>>
 			                                     encoderDecoderFactory)
 	{
@@ -44,7 +44,7 @@ public interface Server<T> extends Closeable
 	 */
 	static <T> Server<T> reactor(int nThreads,
 	                             int port,
-	                             Supplier<MessagingProtocol<T>> protocolFactory,
+	                             Supplier<BidiMessagingProtocol<T>> protocolFactory,
 	                             Supplier<MessageEncoderDecoder<T>> encoderDecoderFactory)
 	{
 		return new Reactor<>(nThreads, port, protocolFactory, encoderDecoderFactory);

@@ -1,7 +1,8 @@
 package bgu.spl181.net.srv;
 
 import bgu.spl181.net.api.MessageEncoderDecoder;
-import bgu.spl181.net.api.MessagingProtocol;
+import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
+import bgu.spl181.net.impl.ImplConnections;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -11,13 +12,15 @@ import java.util.function.Supplier;
 public abstract class BaseServer<T> implements Server<T>
 {
 	private final int port;
-	private final Supplier<MessagingProtocol<T>> protocolFactory;
+	private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
 	private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
 	private ServerSocket sock;
+	private int counter;
+	private ImplConnections<T> connections=new ImplConnections<>();
 
 	public BaseServer(int port,
-	                  Supplier<MessagingProtocol<T>> protocolFactory,
-	                  Supplier<MessageEncoderDecoder<T>> encdecFactory)
+	                                    Supplier<BidiMessagingProtocol<T>> protocolFactory,
+	                                    Supplier<MessageEncoderDecoder<T>> encdecFactory)
 	{
 		this.port=port;
 		this.protocolFactory=protocolFactory;
@@ -39,7 +42,7 @@ public abstract class BaseServer<T> implements Server<T>
 						clientSock,
 						encdecFactory.get(),
 						protocolFactory.get());
-
+				connections.add(counter++,handler);
 				execute(handler);
 			}
 		}
