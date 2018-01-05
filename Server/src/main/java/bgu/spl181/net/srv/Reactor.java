@@ -89,7 +89,6 @@ public class Reactor<T> implements Server<T>
 		}
 	}
 
-
 	private void handleAccept(ServerSocketChannel serverChan, Selector selector) throws IOException
 	{
 		SocketChannel clientChan=serverChan.accept();
