@@ -17,10 +17,10 @@ public interface Server<T> extends Closeable
 	 * @param <T>                   The Message Object for the protocol
 	 * @return A new Thread per client server
 	 */
-	public static <T> Server<T> threadPerClient(int port,
-	                                            Supplier<MessagingProtocol<T>> protocolFactory,
-	                                            Supplier<MessageEncoderDecoder<T>>
-			                                            encoderDecoderFactory)
+	static <T> Server<T> threadPerClient(int port,
+	                                     Supplier<MessagingProtocol<T>> protocolFactory,
+	                                     Supplier<MessageEncoderDecoder<T>>
+			                                     encoderDecoderFactory)
 	{
 		return new BaseServer<T>(port, protocolFactory, encoderDecoderFactory)
 		{
@@ -42,10 +42,10 @@ public interface Server<T> extends Closeable
 	 * @param <T>                   The Message Object for the protocol
 	 * @return A new reactor server
 	 */
-	public static <T> Server<T> reactor(int nThreads,
-	                                    int port,
-	                                    Supplier<MessagingProtocol<T>> protocolFactory,
-	                                    Supplier<MessageEncoderDecoder<T>> encoderDecoderFactory)
+	static <T> Server<T> reactor(int nThreads,
+	                             int port,
+	                             Supplier<MessagingProtocol<T>> protocolFactory,
+	                             Supplier<MessageEncoderDecoder<T>> encoderDecoderFactory)
 	{
 		return new Reactor<>(nThreads, port, protocolFactory, encoderDecoderFactory);
 	}

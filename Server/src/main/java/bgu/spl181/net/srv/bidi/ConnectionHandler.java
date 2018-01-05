@@ -12,5 +12,9 @@ import java.io.Closeable;
  */
 public interface ConnectionHandler<T> extends Closeable
 {
+	/**
+	 * sends msg {@code T} to the client. Should be used by send and broadcast in the Connections implementation
+	 * @param msg the message to be sent
+	 */
 	void send(T msg);
 }
