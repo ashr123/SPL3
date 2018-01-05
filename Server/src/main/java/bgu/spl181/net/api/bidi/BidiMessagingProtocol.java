@@ -22,7 +22,7 @@ public interface BidiMessagingProtocol<T>
 	void start(int connectionId, Connections<T> connections);
 
 	/**
-	 * processes a given message. Unlike MessagingProtocol, responses are sent via the connections object <B>send</B> function.
+	 * processes a given message. Unlike {@link bgu.spl181.net.api.MessagingProtocol}, responses are sent via the connections object <B>send</B> function.
 	 *
 	 * @param message the message to be processed
 	 */

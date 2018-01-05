@@ -20,6 +20,9 @@ public class MovieRentalServiceProtocol<T> implements BidiMessagingProtocol<T>
 	public void process(T message)
 	{
 
+
+
+		connections.send(connectionId, message);
 	}
 
 	@Override

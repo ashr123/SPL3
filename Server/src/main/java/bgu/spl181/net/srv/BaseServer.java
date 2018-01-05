@@ -38,10 +38,12 @@ public abstract class BaseServer<T> implements Server<T>
 			while (!Thread.currentThread().isInterrupted())
 			{
 				Socket clientSock=serverSock.accept();
+				BidiMessagingProtocol<T> protocol=protocolFactory.get();
 				BlockingConnectionHandler<T> handler=new BlockingConnectionHandler<>(
 						clientSock,
 						encdecFactory.get(),
 						protocolFactory.get());
+				protocol.start(counter, connections);
 				connections.add(counter++,handler);
 				execute(handler);
 			}
