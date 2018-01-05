@@ -1,5 +1,10 @@
 package bgu.spl181.net.api.bidi;
 
+/**
+ * This interface should map a unique ID for each active client connected to the server. The implementation of Connections is part of the server pattern and not part of the protocol
+ *
+ * @param <T> the type of the message
+ */
 public interface Connections<T>
 {
 	/**
@@ -12,7 +17,7 @@ public interface Connections<T>
 	boolean send(int connectionId, T msg);
 
 	/**
-	 * sends a message {@code T} to all active clients. This includes clients that has not yet completed log-in by the User service text based protocol. Remember, {@link Connections} belongs to the server pattern implementation, not the protocol!
+	 * sends a message {@code T} to <B><U>all</U></B> active clients. This includes clients that has not yet completed log-in by the User service text based protocol. Remember, {@link Connections} belongs to the server pattern implementation, not the protocol!
 	 *
 	 * @param msg
 	 */
@@ -20,6 +25,7 @@ public interface Connections<T>
 
 	/**
 	 * removes active client connId from map
+	 *
 	 * @param connectionId the client to be removed
 	 */
 	void disconnect(int connectionId);
