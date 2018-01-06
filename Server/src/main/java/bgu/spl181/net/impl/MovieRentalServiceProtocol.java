@@ -163,16 +163,33 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				for(String countries: movies.getBannedCountries())
 					bannedCountries.append("\""+countries+"\" ");
 				connections.send(connectionId,"ACK \""+movieName+"\" "+movies.getAvailableAmount()+" "+movies.getPrice()+" "+bannedCountries);
+				return;
 			}
-			else
-				connections.send(connectionId, "ERROR request info failed");
 		}
+		connections.send(connectionId, "ERROR request info failed");
 	}
+
 	private void info()
 	{
 		StringBuilder output=new StringBuilder();
 		for (Movies.Movie movies : Movies.movies)
 			output.append("\""+movies.getName()+"\""+" ");
 		connections.send(connectionId, "ACK"+output.toString());
+	}
+
+	private void rent(String movieName)
+	{
+
+		for (Users.User user : Users.users)
+			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
+			{
+				for (Movies.Movie movies : Movies.movies)
+				{
+					if (movies.getName().equals(movieName))
+					{
+						
+					}
+				}
+			}
 	}
 }
