@@ -1,5 +1,7 @@
 package bgu.spl181.net.api.bidi;
 
+import bgu.spl181.net.srv.bidi.ConnectionHandler;
+
 /**
  * This interface should map a unique ID for each active client connected to the server. The implementation of Connections is part of the server pattern and not part of the protocol
  *
@@ -29,4 +31,8 @@ public interface Connections<T>
 	 * @param connectionId the client to be removed
 	 */
 	void disconnect(int connectionId);
+
+	void add(int id, ConnectionHandler<T> connectionHandler);
+
+	ConnectionHandler<T> getConnectionHandler(int connectionId);
 }

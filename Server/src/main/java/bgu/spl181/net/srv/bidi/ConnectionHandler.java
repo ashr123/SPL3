@@ -17,4 +17,8 @@ public interface ConnectionHandler<T> extends Closeable
 	 * @param msg the message to be sent
 	 */
 	void send(T msg);
+
+	boolean isLoggedIn();
+
+	void setLoggedIn(boolean loggedIn);
 }

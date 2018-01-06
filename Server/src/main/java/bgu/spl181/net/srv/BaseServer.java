@@ -19,13 +19,13 @@ public abstract class BaseServer<T> implements Server<T>
 	private ImplConnections<T> connections=new ImplConnections<>();
 
 	public BaseServer(int port,
-	                                    Supplier<BidiMessagingProtocol<T>> protocolFactory,
-	                                    Supplier<MessageEncoderDecoder<T>> encdecFactory)
+	                  Supplier<BidiMessagingProtocol<T>> protocolFactory,
+	                  Supplier<MessageEncoderDecoder<T>> encdecFactory)
 	{
 		this.port=port;
 		this.protocolFactory=protocolFactory;
 		this.encdecFactory=encdecFactory;
-		this.sock=null;
+		//		this.sock=null;
 	}
 
 	@Override
@@ -42,9 +42,9 @@ public abstract class BaseServer<T> implements Server<T>
 				BlockingConnectionHandler<T> handler=new BlockingConnectionHandler<>(
 						clientSock,
 						encdecFactory.get(),
-						protocolFactory.get());
+						protocol);
 				protocol.start(counter, connections);
-				connections.add(counter++,handler);
+				connections.add(counter++, handler);
 				execute(handler);
 			}
 		}

@@ -8,12 +8,12 @@ import java.util.Map;
 
 public class ImplConnections<T> implements Connections<T>
 {
-	private final Map<Integer,ConnectionHandler<T>> connections =new HashMap<>();
+	private final Map<Integer, ConnectionHandler<T>> connections=new HashMap<>();
 
 	@Override
 	public boolean send(int connectionId, T msg)
 	{
-		if(connections.get(connectionId)!=null)
+		if (connections.get(connectionId)!=null)
 		{
 			connections.get(connectionId).send(msg);
 			return true;
@@ -24,7 +24,7 @@ public class ImplConnections<T> implements Connections<T>
 	@Override
 	public void broadcast(T msg)
 	{
-		for(ConnectionHandler<T> connectionHandler : connections.values())
+		for (ConnectionHandler<T> connectionHandler : connections.values())
 			connectionHandler.send(msg);
 	}
 
@@ -34,8 +34,15 @@ public class ImplConnections<T> implements Connections<T>
 		connections.remove(connectionId);
 	}
 
-	public void add(int id,ConnectionHandler<T> connectionHandler)
+	@Override
+	public void add(int id, ConnectionHandler<T> connectionHandler)
 	{
-		connections.put(id,connectionHandler);
+		connections.put(id, connectionHandler);
+	}
+
+	@Override
+	public ConnectionHandler<T> getConnectionHandler(int connectionId)
+	{
+		return connections.get(connectionId);
 	}
 }

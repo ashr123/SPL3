@@ -21,6 +21,7 @@ public class NonBlockingConnectionHandler<T> implements java.io.Closeable, Conne
 	private final Queue<ByteBuffer> writeQueue=new ConcurrentLinkedQueue<>();
 	private final SocketChannel chan;
 	private final Reactor reactor;
+	private boolean loggedIn;
 
 	public NonBlockingConnectionHandler(MessageEncoderDecoder<T> reader,
 	                                    BidiMessagingProtocol<T> protocol,
@@ -142,5 +143,17 @@ public class NonBlockingConnectionHandler<T> implements java.io.Closeable, Conne
 	{
 		writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
 		reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+	}
+
+	@Override
+	public boolean isLoggedIn()
+	{
+		return false;
+	}
+
+	@Override
+	public void setLoggedIn(boolean loggedIn)
+	{
+
 	}
 }

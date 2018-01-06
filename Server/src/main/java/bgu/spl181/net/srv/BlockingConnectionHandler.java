@@ -16,7 +16,9 @@ public class BlockingConnectionHandler<T> implements Runnable, java.io.Closeable
 	private final Socket sock;
 	private BufferedInputStream in;
 	private BufferedOutputStream out;
-	private volatile boolean connected=true;
+	private volatile boolean
+			connected=true,
+			loggedIn;
 
 	public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol)
 	{
@@ -74,5 +76,17 @@ public class BlockingConnectionHandler<T> implements Runnable, java.io.Closeable
 		{
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean isLoggedIn()
+	{
+		return loggedIn;
+	}
+
+	@Override
+	public void setLoggedIn(boolean loggedIn)
+	{
+		this.loggedIn=loggedIn;
 	}
 }
