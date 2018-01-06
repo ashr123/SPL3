@@ -125,8 +125,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			case "remmovie":
 				break;
 			case "changeprice":
-				break;
-//				connections.send(connectionId, "ERROR "+msg[1]+" failed");
 		}
 	}
 
