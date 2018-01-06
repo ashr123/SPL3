@@ -1,21 +1,18 @@
 package bgu.spl181.net.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-
-import java.io.FileReader;
 import java.util.List;
 
 public class Users
 {
-	public static List<User> users;
+	public List<User> users;
 
-	private class User
+	public class User
 	{
 		private String username;
 		private String password;
 		private String type;
 		private String country;
+		private String balance;
 
 		public void setMovies(List<Movie> movies)
 		{
@@ -24,7 +21,7 @@ public class Users
 
 		private List<Movie> movies;
 
-		private class Movie
+		public class Movie
 		{
 			private String id;
 			private String name;
@@ -63,6 +60,16 @@ public class Users
 		public List<Movie> getMovies()
 		{
 			return movies;
+		}
+
+		public String getBalance()
+		{
+			return balance;
+		}
+
+		public void setBalance(String balance)
+		{
+			this.balance=balance;
 		}
 	}
 }
