@@ -30,7 +30,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 				break;
 			case "SIGNOUT":
-
+				signOut();
 				break;
 			case "REQUEST":
 
