@@ -114,7 +114,9 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				break;
 			case "info":
 				if(msg.length==3)
-
+					info(msg[3]);
+				else
+					info();
 				break;
 			case "rent":
 				break;
@@ -168,6 +170,9 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	}
 	private void info()
 	{
-
+		StringBuilder output=new StringBuilder();
+		for (Movies.Movie movies : Movies.movies)
+			output.append("\""+movies.getName()+"\""+" ");
+		connections.send(connectionId, "ACK"+output.toString());
 	}
 }
