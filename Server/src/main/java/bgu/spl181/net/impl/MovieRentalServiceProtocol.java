@@ -20,25 +20,21 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	public void process(String message)
 	{
 		String[] msg=message.split(" ");
-
 		switch (msg[0])
 		{
 			case "REGISTER":
-
+				register(msg);
 				break;
 			case "LOGIN":
-
+				login(msg[1], msg[2]);
 				break;
 			case "SIGNOUT":
 				signOut();
 				break;
 			case "REQUEST":
-
+				request(msg);
 				break;
 		}
-
-
-		connections.send(connectionId, message);
 	}
 
 	@Override
