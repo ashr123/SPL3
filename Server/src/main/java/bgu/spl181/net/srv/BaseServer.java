@@ -2,6 +2,7 @@ package bgu.spl181.net.srv;
 
 import bgu.spl181.net.api.MessageEncoderDecoder;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
+import bgu.spl181.net.api.bidi.Connections;
 import bgu.spl181.net.impl.ImplConnections;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public abstract class BaseServer<T> implements Server<T>
 	private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
 	private ServerSocket sock;
 	private int counter;
-	private ImplConnections<T> connections=new ImplConnections<>();
+	private Connections<T> connections=new ImplConnections<>();
 
 	public BaseServer(int port,
 	                  Supplier<BidiMessagingProtocol<T>> protocolFactory,

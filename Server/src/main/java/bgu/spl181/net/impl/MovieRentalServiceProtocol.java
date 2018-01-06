@@ -35,7 +35,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				break;
 			case "REQUEST":
 				request(msg);
-				break;
 		}
 	}
 
@@ -86,8 +85,35 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			connections.send(connectionId, "ERROR signout failed");
 	}
 
-	private void request(String[] mgs)
+	private void request(String[] msg)
 	{
+		switch (msg[1])
+		{
+			case "balance":
+				if (msg[2].equals("add"))
 
+				break;
+			case "info":
+				break;
+			case "rent":
+				break;
+			case "return":
+				break;
+			case "addmovie":
+				break;
+			case "remmovie":
+				break;
+			case "changeprice":
+				break;
+//				connections.send(connectionId, "ERROR "+msg[1]+" failed");
+		}
+	}
+
+	private void requestBalance()
+	{
+		for (Users.User user : Users.users)
+			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
+
+		//connections.send(connectionId, )
 	}
 }

@@ -20,5 +20,7 @@ public interface ConnectionHandler<T> extends Closeable
 
 	boolean isLoggedIn();
 
-	void setLoggedIn(boolean loggedIn);
+	void setLoggedIn(String username);
+
+	String getUsername();
 }
