@@ -3,6 +3,8 @@ package bgu.spl181.net.impl;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl181.net.api.bidi.Connections;
 
+import java.util.ArrayList;
+
 public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 {
 	private boolean shouldTerminate;
@@ -19,7 +21,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	@Override
 	public void process(String message)
 	{
-		String[] msg=message.split(" ");
+		String[] msg=message.split(" ", 4);
 		switch (msg[0])
 		{
 			case "REGISTER":
@@ -45,7 +47,27 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void register(String[] msg)
 	{
-
+		Boolean contains=true;
+		if(msg.length>2)
+		{
+			contains=false;
+			for (Users.User user : Users.users)
+			{
+				if (user.getUsername()==msg[1])
+					contains=true;
+			}
+		}
+		if(!contains)
+		{
+			String country="";
+			if(msg.length==4 && msg[3].contains("country=\"") && (msg[3].indexOf("\"")!=msg[3].lastIndexOf("\"")) )
+				country=msg[3].substring(msg[3].indexOf("\"")+1,msg[3].lastIndexOf("\""));
+			Users.User tmp= new Users.User(msg[1], msg[2], "normal", country, "0", new ArrayList<>());
+			Users.users.add(tmp);
+			connections.send(connectionId, " ACK registration succeeded");
+			return;
+		}
+		connections.send(connectionId,"ERROR registration failed");
 	}
 
 	private void login(String username, String password)

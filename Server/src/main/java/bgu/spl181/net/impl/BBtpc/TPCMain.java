@@ -34,5 +34,7 @@ public class TPCMain
 		{
 			e.printStackTrace();
 		}
+		String message="REGISTER kkk 1234 isreal kkk";
+		String[] msg=message.split(" ", 4);
 	}
 }
