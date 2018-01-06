@@ -35,4 +35,6 @@ public interface Connections<T>
 	void add(int id, ConnectionHandler<T> connectionHandler);
 
 	ConnectionHandler<T> getConnectionHandler(int connectionId);
+
+	boolean isConnected(String username);
 }

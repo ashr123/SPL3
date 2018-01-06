@@ -28,7 +28,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				register(msg);
 				break;
 			case "LOGIN":
-				login(msg[1], msg[2]);
+				login(msg);
 				break;
 			case "SIGNOUT":
 				signOut();
@@ -63,15 +63,31 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				country=msg[3].substring(msg[3].indexOf("\"")+1,msg[3].lastIndexOf("\""));
 			Users.User tmp= new Users.User(msg[1], msg[2], "normal", country, "0", new ArrayList<>());
 			Users.users.add(tmp);
-			connections.send(connectionId, " ACK registration succeeded");
+			connections.send(connectionId, "ACK registration succeeded");
 			return;
 		}
 		connections.send(connectionId,"ERROR registration failed");
 	}
 
-	private void login(String username, String password)
+	private void login(String[] msg)
 	{
-
+		if(msg.length==3)
+		{
+			if (!connections.getConnectionHandler(connectionId).isLoggedIn()&&connections.isConnected(msg[1]))
+			{
+				Boolean contains=false;
+				for (Users.User user : Users.users)
+				{
+					if (user.getUsername()==msg[1] && user.getPassword()==msg[2])
+					{
+						connections.getConnectionHandler(connectionId).setLoggedIn(msg[1]);
+						connections.send(connectionId, "ACK login succeeded");
+						return;
+					}
+				}
+			}
+		}
+		connections.send(connectionId, "ERROR login failed");
 	}
 
 	private void signOut()

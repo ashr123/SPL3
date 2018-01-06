@@ -45,4 +45,13 @@ public class ImplConnections<T> implements Connections<T>
 	{
 		return connections.get(connectionId);
 	}
+
+	@Override
+	public boolean isConnected(String username)
+	{
+		for (ConnectionHandler<T> connectionHandler : connections.values())
+			if(connectionHandler.getUsername().equals(username))
+				return true;
+		return false;
+	}
 }
