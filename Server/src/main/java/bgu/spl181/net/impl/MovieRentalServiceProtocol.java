@@ -4,6 +4,7 @@ import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl181.net.api.bidi.Connections;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 {
@@ -112,6 +113,8 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 					requestBalance();
 				break;
 			case "info":
+				if(msg.length==3)
+
 				break;
 			case "rent":
 				break;
@@ -148,5 +151,25 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				return;
 			}
 		connections.send(connectionId, "ERROR request balance add failed");
+	}
+
+	private void info(String movieName)
+	{
+		for(Movies.Movie movies:Movies.movies)
+		{
+			if(movies.getName().equals(movieName))
+			{
+				StringBuilder bannedCountries=new StringBuilder();
+				for(String countries: movies.getBannedCountries())
+					bannedCountries.append("\""+countries+"\" ");
+				connections.send(connectionId,"ACK \""+movieName+"\" "+movies.getAvailableAmount()+" "+movies.getPrice()+" "+bannedCountries);
+			}
+			else
+				connections.send(connectionId, "ERROR request info failed");
+		}
+	}
+	private void info()
+	{
+
 	}
 }

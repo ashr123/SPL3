@@ -6,7 +6,7 @@ public class Movies
 {
 	public static List<Movie> movies;
 
-	private class Movie
+	public static class Movie
 	{
 		private String id;
 		private String name;
