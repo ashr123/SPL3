@@ -86,7 +86,7 @@ public class Users
 
 		public void setBalance(String balance)
 		{
-			this.balance=balance;
+			this.balance=""+(Integer.parseInt(getBalance())+Integer.parseInt(balance));
 		}
 	}
 }

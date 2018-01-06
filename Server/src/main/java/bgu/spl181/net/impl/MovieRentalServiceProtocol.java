@@ -91,7 +91,9 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		{
 			case "balance":
 				if (msg[2].equals("add"))
-
+					requestBalanceAdd(msg[3]);
+				else
+					requestBalance();
 				break;
 			case "info":
 				break;
@@ -113,7 +115,22 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	{
 		for (Users.User user : Users.users)
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
+			{
+				connections.send(connectionId, "ACK balance "+user.getBalance());
+				return;
+			}
+		connections.send(connectionId, "ERROR request balance info failed");
+	}
 
-		//connections.send(connectionId, )
+	private void requestBalanceAdd(String amount)
+	{
+		for (Users.User user : Users.users)
+			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
+			{
+				user.setBalance(amount);
+				connections.send(connectionId, "ACK balance "+user.getBalance()+" added "+amount);
+				return;
+			}
+		connections.send(connectionId, "ERROR request balance add failed");
 	}
 }
