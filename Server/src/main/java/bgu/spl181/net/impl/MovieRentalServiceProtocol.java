@@ -121,6 +121,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 				break;
 			case "remmovie":
+				requestRemoveMovie(msg[2]);
 				break;
 			case "changeprice":
 		}
@@ -217,8 +218,34 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		connections.send(connectionId, "ERROR request return failed");
 	}
 
-	private void requestAddmovie(String namemovie,String amount,String price,String bannedcountry)
+	private void requestAddMovie(String namemovie,String amount,String price,String bannedcountry)
 	{
 
+	}
+
+	private void requestRemoveMovie(String movieName)
+	{
+		for (Users.User user : Users.users)
+			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
+			{
+				if (!user.getType().equals("admin"))
+				{
+					connections.send(connectionId, "ERROR request return failed");
+					return;
+				}
+				Iterator<Movies.Movie> iterator=Movies.movies.iterator();
+				while (iterator.hasNext())
+				{
+					Movies.Movie movie=iterator.next();
+					if (movie.getName().equals(movieName))
+						if (movie.getAvailableAmount().equals(movie.getTotalAmount()))
+						{
+							Movies.remove(movie);
+							
+						}
+
+				}
+
+			}
 	}
 }

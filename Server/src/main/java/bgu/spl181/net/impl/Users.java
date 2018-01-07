@@ -13,6 +13,12 @@ import java.util.Objects;
 public class Users
 {
 	public static List<User> users;
+	private static Users me;
+
+	public Users()
+	{
+		me=this;
+	}
 
 	public static class User
 	{
@@ -21,10 +27,12 @@ public class Users
 		private String type;
 		private String country;
 		private String balance;
-		private List<Movie> movies;
+		private static List<Movie> movies;
+		private User me;
 
 		public User(String username, String password, String type, String country, String balance)
 		{
+			me=this;
 			this.username=username;
 			this.password=password;
 			this.type=type;
@@ -79,6 +87,20 @@ public class Users
 			toJson();
 		}
 
+		public static boolean remove(Movie movie)
+		{
+			boolean b=movies.remove(movie);
+			toJson();
+			return b;
+		}
+
+		public static boolean add(Movie movie)
+		{
+			boolean b=movies.add(movie);
+			toJson();
+			return b;
+		}
+
 		public static class Movie
 		{
 			private String id;
@@ -112,17 +134,31 @@ public class Users
 				return name;
 			}
 		}
+	}
 
-		private void toJson()
+	public static boolean remove(User user)
+	{
+		boolean b=users.remove(user);
+		toJson();
+		return b;
+	}
+
+	public static boolean add(User user)
+	{
+		boolean b=users.add(user);
+		toJson();
+		return b;
+	}
+
+	private static void toJson()
+	{
+		try (Writer writer=new FileWriter("Users.json"))
 		{
-			try (Writer writer=new FileWriter("Users.json"))
-			{
-				new GsonBuilder().excludeFieldsWithModifiers().create().toJson(this, writer);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
+			new GsonBuilder().excludeFieldsWithModifiers().create().toJson(me, writer);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
 		}
 	}
 }

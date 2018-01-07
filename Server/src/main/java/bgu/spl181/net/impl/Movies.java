@@ -10,6 +10,12 @@ import java.util.List;
 public class Movies
 {
 	public static List<Movie> movies;
+	private static Movies me;
+
+	public Movies()
+	{
+		me=this;
+	}
 
 	public static class Movie
 	{
@@ -86,16 +92,37 @@ public class Movies
 			toJson();
 		}
 
-		private void toJson()
+		public boolean removeMovie(Movie movie)
 		{
-			try (Writer writer=new FileWriter("Movies.json"))
-			{
-				new GsonBuilder().excludeFieldsWithModifiers().create().toJson(this, writer);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
+			boolean b=movies.remove(movie);
+			toJson();
+			return b;
+		}
+	}
+
+	public static boolean remove(Movie movie)
+	{
+		boolean b=movies.remove(movie);
+		toJson();
+		return b;
+	}
+
+	public static boolean add(Movie movie)
+	{
+		boolean b=movies.add(movie);
+		toJson();
+		return b;
+	}
+
+	private static void toJson()
+	{
+		try (Writer writer=new FileWriter("Movies.json"))
+		{
+			new GsonBuilder().excludeFieldsWithModifiers().create().toJson(me, writer);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
 		}
 	}
 }
