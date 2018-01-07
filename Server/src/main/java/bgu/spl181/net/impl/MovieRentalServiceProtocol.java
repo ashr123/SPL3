@@ -117,6 +117,8 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				requestReturn(msg[2]);
 				break;
 			case "addmovie":
+				if(msg.length==6)
+
 				break;
 			case "remmovie":
 				break;
@@ -152,11 +154,8 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		for (Movies.Movie movie : Movies.movies)
 			if (movie.getName().equals(movieName))
 			{
-				StringBuilder bannedCountries=new StringBuilder();
-				for (String countries : movie.getBannedCountries())
-					bannedCountries.append("\""+countries+"\" ");
 				connections.send(connectionId,
-				                 "ACK \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" "+bannedCountries);
+				                 "ACK \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" "+movie.getBannedCountries());
 				return;
 			}
 		connections.send(connectionId, "ERROR request info failed");
@@ -205,10 +204,21 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 					{
 						iterator.remove();
 						connections.send(connectionId, "ACK return \""+movieName+"\" success");
-						return;
+						for (Movies.Movie movie : Movies.movies)
+							if (movie.getName().equals(movieName))
+							{
+								movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())+1));
+								connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" ");
+								return;
+							}
 					}
 				}
 			}
 		connections.send(connectionId, "ERROR request return failed");
+	}
+
+	private void requestAddmovie(String namemovie,String amount,String price,String bannedcountry)
+	{
+
 	}
 }
