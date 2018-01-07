@@ -212,8 +212,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 							if (movie.getName().equals(movieName))
 							{
 								movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())+1));
-								connections.broadcast(
-										"BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" ");
+								connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" ");
 								return;
 							}
 						return;
@@ -229,7 +228,8 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			for (Users.User user : Users.users)
 			{
 				if (user.getUsername()
-				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType().equals("admin"))
+				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType()
+				                                                                                     .equals("admin"))
 				{
 					Boolean found=false;
 					for (Movies.Movie movie : Movies.movies)
@@ -259,14 +259,17 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		{
 			for (Users.User user : Users.users)
 			{
-				if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType().equals("admin"))
+				if (user.getUsername()
+				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType()
+				                                                                                     .equals("admin"))
 				{
 					for (Movies.Movie movie : Movies.movies)
 						if (movie.getName().equals(movieName))
 						{
 							movie.setPrice(price);
 							connections.send(connectionId, "ACK changeprice \""+movieName+"\" success");
-							connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+price+" ");
+							connections
+									.broadcast("BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+price+" ");
 							return;
 						}
 				}
