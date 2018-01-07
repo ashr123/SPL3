@@ -1,5 +1,10 @@
 package bgu.spl181.net.impl;
 
+import com.google.gson.GsonBuilder;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 
 public class Movies
@@ -23,6 +28,7 @@ public class Movies
 		public void setId(String id)
 		{
 			this.id=id;
+			toJson();
 		}
 
 		public String getName()
@@ -33,6 +39,7 @@ public class Movies
 		public void setName(String name)
 		{
 			this.name=name;
+			toJson();
 		}
 
 		public String getPrice()
@@ -43,6 +50,7 @@ public class Movies
 		public void setPrice(String price)
 		{
 			this.price=price;
+			toJson();
 		}
 
 		public List<String> getBannedCountries()
@@ -53,6 +61,7 @@ public class Movies
 		public void setBannedCountries(List<String> bannedCountries)
 		{
 			this.bannedCountries=bannedCountries;
+			toJson();
 		}
 
 		public String getAvailableAmount()
@@ -63,6 +72,7 @@ public class Movies
 		public void setAvailableAmount(String availableAmount)
 		{
 			this.availableAmount=availableAmount;
+			toJson();
 		}
 
 		public String getTotalAmount()
@@ -73,6 +83,19 @@ public class Movies
 		public void setTotalAmount(String totalAmount)
 		{
 			this.totalAmount=totalAmount;
+			toJson();
+		}
+
+		private void toJson()
+		{
+			try (Writer writer=new FileWriter("Movies.json"))
+			{
+				new GsonBuilder().excludeFieldsWithModifiers().create().toJson(this, writer);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 }

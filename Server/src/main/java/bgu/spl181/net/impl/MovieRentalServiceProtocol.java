@@ -73,13 +73,13 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	{
 		if (msg.length==3 &&
 		    !connections.getConnectionHandler(connectionId).isLoggedIn() && connections.isConnected(msg[1]))
-				for (Users.User user : Users.users)
-					if (user.getUsername().equals(msg[1]) && user.getPassword().equals(msg[2]))
-					{
-						connections.getConnectionHandler(connectionId).setLoggedIn(msg[1]);
-						connections.send(connectionId, "ACK login succeeded");
-						return;
-					}
+			for (Users.User user : Users.users)
+				if (user.getUsername().equals(msg[1]) && user.getPassword().equals(msg[2]))
+				{
+					connections.getConnectionHandler(connectionId).setLoggedIn(msg[1]);
+					connections.send(connectionId, "ACK login succeeded");
+					return;
+				}
 		connections.send(connectionId, "ERROR login failed");
 	}
 
@@ -175,15 +175,17 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
 				for (Movies.Movie movie : Movies.movies)
 					if (movie.getName().equals(movieName))
-						if (Integer.parseInt(user.getBalance())>=Integer.parseInt(movie.getPrice()) &&
+						if (Integer.parseInt(user.getBalance()) >= Integer.parseInt(movie.getPrice()) &&
 						    Integer.parseInt(movie.getAvailableAmount())>0 &&
 						    user.addMovie(new Users.User.Movie(movie.getId(), movie.getName())))
-							{
-								user.setBalance("-"+movie.getPrice());
-								movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())-1));
-								connections.send(connectionId, "ACK rent \""+movie.getName()+"\" success");
-								return;
-							}
+						{
+							user.setBalance("-"+movie.getPrice());
+							movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())-1));
+							connections.send(connectionId, "ACK rent \""+movie.getName()+"\" success");
+							connections.broadcast(
+									"BROADCAST movie \""+movie.getName()+"\" "+movie.getAvailableAmount()+" "+movie.getPrice());
+							return;
+						}
 						else
 						{
 							connections.send(connectionId, "ERROR request rent failed");
@@ -199,7 +201,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			{
 				Iterator<Users.User.Movie> iterator=user.getMovies().iterator();
 				while (iterator.hasNext())
-				{
 					if (iterator.next().getName().equals(movieName))
 					{
 						iterator.remove();
@@ -212,7 +213,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 								return;
 							}
 					}
-				}
 			}
 		connections.send(connectionId, "ERROR request return failed");
 	}

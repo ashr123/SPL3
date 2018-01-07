@@ -1,5 +1,11 @@
 package bgu.spl181.net.impl;
 
+import bgu.spl181.net.impl.BBtpc.TPCMain;
+import com.google.gson.GsonBuilder;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +35,12 @@ public class Users
 
 		public boolean addMovie(Movie movie)
 		{
-			return !movies.contains(movie) && movies.add(movie);
+			if (movies.contains(movie))
+				return false;
+			if (!movies.add(movie))
+				return false;
+			toJson();
+			return true;
 		}
 
 		public String getUsername()
@@ -65,6 +76,7 @@ public class Users
 		public void setBalance(String balance)
 		{
 			this.balance=""+(Integer.parseInt(getBalance())+Integer.parseInt(balance));
+			toJson();
 		}
 
 		public static class Movie
@@ -98,6 +110,18 @@ public class Users
 			public String getName()
 			{
 				return name;
+			}
+		}
+
+		private void toJson()
+		{
+			try (Writer writer=new FileWriter("Users.json"))
+			{
+				new GsonBuilder().excludeFieldsWithModifiers().create().toJson(this, writer);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
 			}
 		}
 	}
