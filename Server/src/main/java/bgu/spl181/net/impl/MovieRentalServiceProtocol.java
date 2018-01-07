@@ -241,7 +241,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 						if (movie.getAvailableAmount().equals(movie.getTotalAmount()))
 						{
 							Movies.remove(movie);
-							
+
 						}
 
 				}

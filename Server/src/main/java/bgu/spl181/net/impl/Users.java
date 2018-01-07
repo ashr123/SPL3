@@ -27,7 +27,7 @@ public class Users
 		private String type;
 		private String country;
 		private String balance;
-		private static List<Movie> movies;
+		private  List<Movie> movies;
 		private User me;
 
 		public User(String username, String password, String type, String country, String balance)
@@ -87,14 +87,14 @@ public class Users
 			toJson();
 		}
 
-		public static boolean remove(Movie movie)
+		public boolean remove(Movie movie)
 		{
 			boolean b=movies.remove(movie);
 			toJson();
 			return b;
 		}
 
-		public static boolean add(Movie movie)
+		public boolean add(Movie movie)
 		{
 			boolean b=movies.add(movie);
 			toJson();
