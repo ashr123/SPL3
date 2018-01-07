@@ -118,9 +118,9 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				break;
 			case "addmovie":
 				if (msg.length==5)
-					requestAddmovie(msg[2], msg[3], msg[4], "");
+					requestAddMovie(msg[2], msg[3], msg[4], "");
 				else
-					requestAddmovie(msg[2], msg[3], msg[4], msg[5]);
+					requestAddMovie(msg[2], msg[3], msg[4], msg[5]);
 				break;
 			case "remmovie":
 				requestRemoveMovie(msg[2]);
@@ -222,15 +222,14 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		connections.send(connectionId, "ERROR request return failed");
 	}
 
-	private void requestAddmovie(String movieName, String amount, String price, String bannedCountry)
+	private void requestAddMovie(String movieName, String amount, String price, String bannedCountry)
 	{
 		if (Integer.parseInt(amount)>0 || Integer.parseInt(price)>0)
 		{
 			for (Users.User user : Users.users)
 			{
 				if (user.getUsername()
-				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType()
-				                                                                                     .equals("admin"))
+				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType().equals("admin"))
 				{
 					Boolean found=false;
 					for (Movies.Movie movie : Movies.movies)
@@ -266,10 +265,14 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 						if (movie.getName().equals(movieName))
 						{
 							movie.setPrice(price);
+							connections.send(connectionId, "ACK changeprice \""+movieName+"\" success");
+							connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+price+" ");
+							return;
 						}
 				}
 			}
 		}
+		connections.send(connectionId, "ERROR request changeprice failed");
 	}
 
 	private void requestRemoveMovie(String movieName)
@@ -290,7 +293,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 						if (movie.getAvailableAmount().equals(movie.getTotalAmount()))
 						{
 							Movies.remove(movie);
-
 						}
 
 				}
