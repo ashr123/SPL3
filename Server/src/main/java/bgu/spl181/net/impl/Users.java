@@ -1,6 +1,7 @@
 package bgu.spl181.net.impl;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Users
 {
@@ -25,9 +26,10 @@ public class Users
 			this.movies=movies;
 		}
 
-		public void setMovies(List<Movie> movies)
+		public void addMovie(Movie movie)
 		{
-			this.movies=movies;
+			//this.movies=movies;
+
 		}
 
 		private List<Movie> movies;
@@ -36,6 +38,18 @@ public class Users
 		{
 			private String id;
 			private String name;
+
+			@Override
+			public boolean equals(Object o)
+			{
+				if (this==o)
+					return true;
+				if (!(o instanceof Movie))
+					return false;
+				Movie movie=(Movie) o;
+				return Objects.equals(getId(), movie.getId()) &&
+				       Objects.equals(getName(), movie.getName());
+			}
 
 			public Movie(String id, String name)
 			{
