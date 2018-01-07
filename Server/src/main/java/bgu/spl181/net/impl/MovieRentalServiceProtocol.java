@@ -3,6 +3,8 @@ package bgu.spl181.net.impl;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl181.net.api.bidi.Connections;
 
+import java.util.Iterator;
+
 public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 {
 	private boolean shouldTerminate;
@@ -112,6 +114,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				requestRent(msg[2]);
 				break;
 			case "return":
+				requestReturn(msg[2]);
 				break;
 			case "addmovie":
 				break;
@@ -169,7 +172,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestRent(String movieName)
 	{
-
 		for (Users.User user : Users.users)
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
 				for (Movies.Movie movie : Movies.movies)
@@ -189,5 +191,24 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 							return;
 						}
 		connections.send(connectionId, "ERROR request rent failed");
+	}
+
+	private void requestReturn(String movieName)
+	{
+		for (Users.User user : Users.users)
+			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
+			{
+				Iterator<Users.User.Movie> iterator=user.getMovies().iterator();
+				while (iterator.hasNext())
+				{
+					if (iterator.next().getName().equals(movieName))
+					{
+						iterator.remove();
+						connections.send(connectionId, "ACK return \""+movieName+"\" success");
+						return;
+					}
+				}
+			}
+		connections.send(connectionId, "ERROR request return failed");
 	}
 }
