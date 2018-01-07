@@ -1,5 +1,6 @@
 package bgu.spl181.net.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,58 +15,21 @@ public class Users
 		private String type;
 		private String country;
 		private String balance;
+		private List<Movie> movies;
 
-		public User(String username, String password, String type, String country, String balance,
-		            List<Movie> movies)
+		public User(String username, String password, String type, String country, String balance)
 		{
 			this.username=username;
 			this.password=password;
 			this.type=type;
 			this.country=country;
 			this.balance=balance;
-			this.movies=movies;
+			this.movies=new ArrayList<>();
 		}
 
-		public void addMovie(Movie movie)
+		public boolean addMovie(Movie movie)
 		{
-			//this.movies=movies;
-
-		}
-
-		private List<Movie> movies;
-
-		public static class Movie
-		{
-			private String id;
-			private String name;
-
-			@Override
-			public boolean equals(Object o)
-			{
-				if (this==o)
-					return true;
-				if (!(o instanceof Movie))
-					return false;
-				Movie movie=(Movie) o;
-				return Objects.equals(getId(), movie.getId()) &&
-				       Objects.equals(getName(), movie.getName());
-			}
-
-			public Movie(String id, String name)
-			{
-				this.id=id;
-				this.name=name;
-			}
-
-			public String getId()
-			{
-				return id;
-			}
-
-			public String getName()
-			{
-				return name;
-			}
+			return !movies.contains(movie) && movies.add(movie);
 		}
 
 		public String getUsername()
@@ -101,6 +65,40 @@ public class Users
 		public void setBalance(String balance)
 		{
 			this.balance=""+(Integer.parseInt(getBalance())+Integer.parseInt(balance));
+		}
+
+		public static class Movie
+		{
+			private String id;
+			private String name;
+
+			public Movie(String id, String name)
+			{
+				this.id=id;
+				this.name=name;
+			}
+
+			@Override
+			public boolean equals(Object o)
+			{
+				if (this==o)
+					return true;
+				if (!(o instanceof Movie))
+					return false;
+				Movie movie=(Movie)o;
+				return Objects.equals(getId(), movie.getId()) &&
+				       Objects.equals(getName(), movie.getName());
+			}
+
+			public String getId()
+			{
+				return id;
+			}
+
+			public String getName()
+			{
+				return name;
+			}
 		}
 	}
 }

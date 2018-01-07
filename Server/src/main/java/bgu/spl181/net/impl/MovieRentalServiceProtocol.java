@@ -3,8 +3,6 @@ package bgu.spl181.net.impl;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl181.net.api.bidi.Connections;
 
-import java.util.ArrayList;
-
 public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 {
 	private boolean shouldTerminate;
@@ -52,7 +50,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			contains=false;
 			for (Users.User user : Users.users)
 			{
-				if (user.getUsername()==msg[1])
+				if (user.getUsername().equals(msg[1]))
 					contains=true;
 			}
 		}
@@ -61,7 +59,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			String country="";
 			if (msg.length==4 && msg[3].contains("country=\"") && (msg[3].indexOf("\"")!=msg[3].lastIndexOf("\"")))
 				country=msg[3].substring(msg[3].indexOf("\"")+1, msg[3].lastIndexOf("\""));
-			Users.User tmp=new Users.User(msg[1], msg[2], "normal", country, "0", new ArrayList<>());
+			Users.User tmp=new Users.User(msg[1], msg[2], "normal", country, "0");
 			Users.users.add(tmp);
 			connections.send(connectionId, "ACK registration succeeded");
 			return;
@@ -71,22 +69,15 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void login(String[] msg)
 	{
-		if (msg.length==3)
-		{
-			if (!connections.getConnectionHandler(connectionId).isLoggedIn() && connections.isConnected(msg[1]))
-			{
-				Boolean contains=false;
+		if (msg.length==3 &&
+		    !connections.getConnectionHandler(connectionId).isLoggedIn() && connections.isConnected(msg[1]))
 				for (Users.User user : Users.users)
-				{
-					if (user.getUsername()==msg[1] && user.getPassword()==msg[2])
+					if (user.getUsername().equals(msg[1]) && user.getPassword().equals(msg[2]))
 					{
 						connections.getConnectionHandler(connectionId).setLoggedIn(msg[1]);
 						connections.send(connectionId, "ACK login succeeded");
 						return;
 					}
-				}
-			}
-		}
 		connections.send(connectionId, "ERROR login failed");
 	}
 
@@ -155,7 +146,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	private void info(String movieName)
 	{
 		for (Movies.Movie movie : Movies.movies)
-		{
 			if (movie.getName().equals(movieName))
 			{
 				StringBuilder bannedCountries=new StringBuilder();
@@ -165,7 +155,6 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				                 "ACK \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" "+bannedCountries);
 				return;
 			}
-		}
 		connections.send(connectionId, "ERROR request info failed");
 	}
 
@@ -182,14 +171,22 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 		for (Users.User user : Users.users)
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
-			{
-				for (Movies.Movie movies : Movies.movies)
-				{
-					if (movies.getName().equals(movieName))
-					{
-						user.setMovies();
-					}
-				}
-			}
+				for (Movies.Movie movie : Movies.movies)
+					if (movie.getName().equals(movieName))
+						if (Integer.parseInt(user.getBalance())>=Integer.parseInt(movie.getPrice()) &&
+						    Integer.parseInt(movie.getAvailableAmount())>0 &&
+						    user.addMovie(new Users.User.Movie(movie.getId(), movie.getName())))
+							{
+								user.setBalance("-"+movie.getPrice());
+								movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())-1));
+								connections.send(connectionId, "ACK rent \""+movie.getName()+"\" success");
+								return;
+							}
+						else
+						{
+							connections.send(connectionId, "ERROR request rent failed");
+							return;
+						}
+		connections.send(connectionId, "ERROR request rent failed");
 	}
 }

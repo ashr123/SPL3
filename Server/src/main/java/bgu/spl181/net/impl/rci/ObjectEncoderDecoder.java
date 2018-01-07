@@ -2,13 +2,7 @@ package bgu.spl181.net.impl.rci;
 
 import bgu.spl181.net.api.MessageEncoderDecoder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.ByteBuffer;
 
 public class ObjectEncoderDecoder implements MessageEncoderDecoder<Serializable>
@@ -56,7 +50,7 @@ public class ObjectEncoderDecoder implements MessageEncoderDecoder<Serializable>
 		try
 		{
 			ObjectInput in=new ObjectInputStream(new ByteArrayInputStream(objectBytes));
-			return (Serializable) in.readObject();
+			return (Serializable)in.readObject();
 		}
 		catch (Exception ex)
 		{

@@ -5,11 +5,7 @@ import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.ClosedSelectorException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
@@ -103,7 +99,7 @@ public class Reactor<T> implements Server<T>
 
 	private void handleReadWrite(SelectionKey key)
 	{
-		NonBlockingConnectionHandler handler=(NonBlockingConnectionHandler) key.attachment();
+		NonBlockingConnectionHandler handler=(NonBlockingConnectionHandler)key.attachment();
 
 		if (key.isReadable())
 		{

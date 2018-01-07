@@ -9,7 +9,7 @@ public class NewsFeedClientMain
 		if (args.length==0)
 			args=new String[]{"127.0.0.1"};
 
-//		System.out.println("running clients");
+		//		System.out.println("running clients");
 		runFirstClient(args[0]);
 		runSecondClient(args[0]);
 		runThirdClient(args[0]);
