@@ -5,7 +5,9 @@ import com.google.gson.GsonBuilder;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 public class Movies
 {
@@ -22,9 +24,19 @@ public class Movies
 		private String id;
 		private String name;
 		private String price;
-		private List<String> bannedCountries;
+		private String bannedCountries;
 		private String availableAmount;
 		private String totalAmount;
+
+		public Movie(String id, String name, String price, String bannedCountries, String availableAmount, String totalAmount)
+		{
+			this.id=id;
+			this.name=name;
+			this.price=price;
+			this.bannedCountries=bannedCountries;
+			this.availableAmount=availableAmount;
+			this.totalAmount=totalAmount;
+		}
 
 		public String getId()
 		{
@@ -59,12 +71,12 @@ public class Movies
 			toJson();
 		}
 
-		public List<String> getBannedCountries()
+		public String getBannedCountries()
 		{
 			return bannedCountries;
 		}
 
-		public void setBannedCountries(List<String> bannedCountries)
+		public void setBannedCountries(String bannedCountries)
 		{
 			this.bannedCountries=bannedCountries;
 			toJson();

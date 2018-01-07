@@ -21,7 +21,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	@Override
 	public void process(String message)
 	{
-		String[] msg=message.split(" ", 4);
+		String[] msg=message.split(" ", 6);
 		switch (msg[0])
 		{
 			case "REGISTER":
@@ -117,8 +117,10 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				requestReturn(msg[2]);
 				break;
 			case "addmovie":
-				if(msg.length==6)
-
+				if (msg.length==5)
+					requestAddmovie(msg[2], msg[3], msg[4], "");
+				else
+					requestAddmovie(msg[2], msg[3], msg[4], msg[5]);
 				break;
 			case "remmovie":
 				requestRemoveMovie(msg[2]);
@@ -210,17 +212,64 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 							if (movie.getName().equals(movieName))
 							{
 								movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())+1));
-								connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" ");
+								connections.broadcast(
+										"BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" ");
 								return;
 							}
+						return;
 					}
 			}
 		connections.send(connectionId, "ERROR request return failed");
 	}
 
-	private void requestAddMovie(String namemovie,String amount,String price,String bannedcountry)
+	private void requestAddmovie(String movieName, String amount, String price, String bannedCountry)
 	{
+		if (Integer.parseInt(amount)>0 || Integer.parseInt(price)>0)
+		{
+			for (Users.User user : Users.users)
+			{
+				if (user.getUsername()
+				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType()
+				                                                                                     .equals("admin"))
+				{
+					Boolean found=false;
+					for (Movies.Movie movie : Movies.movies)
+						if (movie.getName().equals(movieName))
+						{
+							found=true;
+							break;
+						}
+					if (!found)
+					{
+						String id=""+(Integer.parseInt(Movies.movies.get(Movies.movies.size()-1).getId())+1);
+						Movies.movies.add(new Movies.Movie(id, movieName, price, bannedCountry, amount, amount));
+						connections.send(connectionId, "ACK addmovie \""+movieName+"\" success");
+						connections.broadcast("BROADCAST movie \""+movieName+"\" "+amount+" "+price+" ");
+						return;
+					}
+					else break;
+				}
+			}
+		}
+		connections.send(connectionId, "ERROR request addmovie failed");
+	}
 
+	private void requestChangeprice(String movieName, String price)
+	{
+		if (Integer.parseInt(price)>0)
+		{
+			for (Users.User user : Users.users)
+			{
+				if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType().equals("admin"))
+				{
+					for (Movies.Movie movie : Movies.movies)
+						if (movie.getName().equals(movieName))
+						{
+							movie.setPrice(price);
+						}
+				}
+			}
+		}
 	}
 
 	private void requestRemoveMovie(String movieName)
