@@ -104,11 +104,12 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				break;
 			case "info":
 				if (msg.length==3)
-					info(msg[2]);
+					requestInfo(msg[2]);
 				else
-					info();
+					requestInfo();
 				break;
 			case "rent":
+				requestRent(msg[2]);
 				break;
 			case "return":
 				break;
@@ -143,7 +144,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		connections.send(connectionId, "ERROR request balance add failed");
 	}
 
-	private void info(String movieName)
+	private void requestInfo(String movieName)
 	{
 		for (Movies.Movie movie : Movies.movies)
 			if (movie.getName().equals(movieName))
@@ -158,7 +159,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		connections.send(connectionId, "ERROR request info failed");
 	}
 
-	private void info()
+	private void requestInfo()
 	{
 		StringBuilder output=new StringBuilder();
 		for (Movies.Movie movie : Movies.movies)
@@ -166,7 +167,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		connections.send(connectionId, "ACK"+output.toString());
 	}
 
-	private void rent(String movieName)
+	private void requestRent(String movieName)
 	{
 
 		for (Users.User user : Users.users)
