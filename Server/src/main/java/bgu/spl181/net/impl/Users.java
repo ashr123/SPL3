@@ -28,11 +28,9 @@ public class Users
 		private String country;
 		private String balance;
 		private  List<Movie> movies;
-		private User me;
 
 		public User(String username, String password, String type, String country, String balance)
 		{
-			me=this;
 			this.username=username;
 			this.password=password;
 			this.type=type;

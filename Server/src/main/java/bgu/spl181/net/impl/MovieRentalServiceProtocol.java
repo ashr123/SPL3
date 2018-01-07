@@ -62,7 +62,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			if (msg.length==4 && msg[3].contains("country=\"") && (msg[3].indexOf("\"")!=msg[3].lastIndexOf("\"")))
 				country=msg[3].substring(msg[3].indexOf("\"")+1, msg[3].lastIndexOf("\""));
 			Users.User tmp=new Users.User(msg[1], msg[2], "normal", country, "0");
-			Users.users.add(tmp);
+			Users.add(tmp);
 			connections.send(connectionId, "ACK registration succeeded");
 			return;
 		}
@@ -126,6 +126,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				requestRemoveMovie(msg[2]);
 				break;
 			case "changeprice":
+				requestChangePrice(msg[2], msg[3]);
 		}
 	}
 
@@ -203,20 +204,25 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
 			{
 				Iterator<Users.User.Movie> iterator=user.getMovies().iterator();
+				Users.User.Movie movie;
 				while (iterator.hasNext())
-					if (iterator.next().getName().equals(movieName))
+				{
+					movie=iterator.next();
+					if (movie.getName().equals(movieName))
 					{
-						iterator.remove();
+						user.remove(movie);
 						connections.send(connectionId, "ACK return \""+movieName+"\" success");
-						for (Movies.Movie movie : Movies.movies)
-							if (movie.getName().equals(movieName))
+						for (Movies.Movie movie1 : Movies.movies)
+							if (movie1.getName().equals(movieName))
 							{
-								movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())+1));
-								connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" ");
+								movie1.setAvailableAmount(""+(Integer.parseInt(movie1.getAvailableAmount())+1));
+								connections.broadcast(
+										"BROADCAST movie \""+movieName+"\" "+movie1.getAvailableAmount()+" "+movie1.getPrice()+" ");
 								return;
 							}
 						return;
 					}
+				}
 			}
 		connections.send(connectionId, "ERROR request return failed");
 	}
@@ -241,7 +247,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 					if (!found)
 					{
 						String id=""+(Integer.parseInt(Movies.movies.get(Movies.movies.size()-1).getId())+1);
-						Movies.movies.add(new Movies.Movie(id, movieName, price, bannedCountry, amount, amount));
+						Movies.add(new Movies.Movie(id, movieName, price, bannedCountry, amount, amount));
 						connections.send(connectionId, "ACK addmovie \""+movieName+"\" success");
 						connections.broadcast("BROADCAST movie \""+movieName+"\" "+amount+" "+price+" ");
 						return;
@@ -253,7 +259,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		connections.send(connectionId, "ERROR request addmovie failed");
 	}
 
-	private void requestChangeprice(String movieName, String price)
+	private void requestChangePrice(String movieName, String price)
 	{
 		if (Integer.parseInt(price)>0)
 		{
@@ -285,21 +291,23 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			{
 				if (!user.getType().equals("admin"))
 				{
-					connections.send(connectionId, "ERROR request return failed");
+					connections.send(connectionId, "ERROR request remmovie failed");
 					return;
 				}
-				Iterator<Movies.Movie> iterator=Movies.movies.iterator();
-				while (iterator.hasNext())
+				for (Movies.Movie movie : Movies.movies)
 				{
-					Movies.Movie movie=iterator.next();
 					if (movie.getName().equals(movieName))
 						if (movie.getAvailableAmount().equals(movie.getTotalAmount()))
 						{
 							Movies.remove(movie);
+							connections.send(connectionId, "ACK remmovie \""+movieName+"\" success");
+							connections.broadcast("BROADCAST movie \""+movieName+"\" removed");
+							return;
 						}
-
 				}
-
+				connections.send(connectionId, "ERROR request remmovie failed");
+				return;
 			}
+		connections.send(connectionId, "ERROR request remmovie failed");
 	}
 }
