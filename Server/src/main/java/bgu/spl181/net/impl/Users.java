@@ -31,11 +31,6 @@ public class Users
 		}
 	}
 
-	public Users()
-	{
-		me=this;
-	}
-
 	public static class User
 	{
 		private String username;

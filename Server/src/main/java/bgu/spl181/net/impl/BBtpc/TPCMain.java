@@ -13,6 +13,7 @@ import java.util.List;
 public class TPCMain
 {
 	private static final Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
+	static Users users=new Users();
 
 //	static
 //	{
@@ -39,14 +40,14 @@ public class TPCMain
 		{
 			e.printStackTrace();
 		}
-		try (Writer writer=new FileWriter("Output2.json"))
-		{
-			gson.toJson(movies, writer);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+//		try (Writer writer=new FileWriter("Output2.json"))
+//		{
+//			gson.toJson(movies, writer);
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
 		//String balance="100";
 		//balance=""+(Integer.parseInt(balance)+Integer.parseInt("-"+"5"));
 	}

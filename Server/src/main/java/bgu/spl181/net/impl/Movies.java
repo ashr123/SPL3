@@ -30,11 +30,6 @@ public class Movies
 		}
 	}
 
-	public Movies()
-	{
-		me=this;
-	}
-
 	public static class Movie
 	{
 		private String id;
