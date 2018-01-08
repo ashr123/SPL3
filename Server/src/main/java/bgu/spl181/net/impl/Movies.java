@@ -1,18 +1,34 @@
 package bgu.spl181.net.impl;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
+import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Vector;
 
 public class Movies
 {
 	public static List<Movie> movies;
-	private static Movies me;
+	private static transient Movies me;
+	private static transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
+
+	static
+	{
+		try
+		{
+			me=gson.fromJson(new JsonReader(new FileReader("Movies.json")), Users.class);
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	public Movies()
 	{
@@ -103,13 +119,6 @@ public class Movies
 			this.totalAmount=totalAmount;
 			toJson();
 		}
-
-		public boolean removeMovie(Movie movie)
-		{
-			boolean b=movies.remove(movie);
-			toJson();
-			return b;
-		}
 	}
 
 	public static boolean remove(Movie movie)
@@ -130,7 +139,7 @@ public class Movies
 	{
 		try (Writer writer=new FileWriter("Movies.json"))
 		{
-			new GsonBuilder().excludeFieldsWithModifiers().create().toJson(me, writer);
+			gson.toJson(me, writer);
 		}
 		catch (IOException e)
 		{

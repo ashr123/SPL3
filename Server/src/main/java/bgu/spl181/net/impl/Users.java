@@ -1,19 +1,35 @@
 package bgu.spl181.net.impl;
 
-import bgu.spl181.net.impl.BBtpc.TPCMain;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class Users
 {
 	public static List<User> users;
-	private static Users me;
+	private transient static Users me;
+	private transient static Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
+
+	static
+	{
+		try
+		{
+			me=gson.fromJson(new JsonReader(new FileReader("Users.json")), Users.class);
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
 	public Users()
 	{
@@ -117,9 +133,10 @@ public class Users
 					return true;
 				if (!(o instanceof Movie))
 					return false;
+
 				Movie movie=(Movie)o;
-				return Objects.equals(getId(), movie.getId()) &&
-				       Objects.equals(getName(), movie.getName());
+
+				return getId().equals(movie.getId()) && getName().equals(movie.getName());
 			}
 
 			public String getId()
@@ -152,7 +169,7 @@ public class Users
 	{
 		try (Writer writer=new FileWriter("Users.json"))
 		{
-			new GsonBuilder().excludeFieldsWithModifiers().create().toJson(me, writer);
+			gson.toJson(me, writer);
 		}
 		catch (IOException e)
 		{
