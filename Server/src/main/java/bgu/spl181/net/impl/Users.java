@@ -15,19 +15,23 @@ import java.util.List;
 
 public class Users
 {
-	public static List<User> users;
+	private static List<User> users;
 	private transient static Users me;
 	private transient static Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
 	static
 	{
-		try
+		synchronized (Users.class)
 		{
-			me=gson.fromJson(new JsonReader(new FileReader("Users.json")), Users.class);
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
+			if (me==null)
+				try
+				{
+					me=gson.fromJson(new JsonReader(new FileReader("Users.json")), Users.class);
+				}
+				catch (FileNotFoundException e)
+				{
+					e.printStackTrace();
+				}
 		}
 	}
 
@@ -38,7 +42,7 @@ public class Users
 		private String type;
 		private String country;
 		private String balance;
-		private  List<Movie> movies;
+		private List<Movie> movies;
 
 		public User(String username, String password, String type, String country, String balance)
 		{
@@ -52,9 +56,7 @@ public class Users
 
 		public boolean addMovie(Movie movie)
 		{
-			if (movies.contains(movie))
-				return false;
-			if (!movies.add(movie))
+			if (movies.contains(movie) || !movies.add(movie))
 				return false;
 			toJson();
 			return true;
@@ -158,6 +160,11 @@ public class Users
 		boolean b=users.add(user);
 		toJson();
 		return b;
+	}
+
+	public static List<User> getUsers()
+	{
+		return users;
 	}
 
 	private static void toJson()

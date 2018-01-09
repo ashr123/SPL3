@@ -14,19 +14,23 @@ import java.util.List;
 
 public class Movies
 {
-	public static List<Movie> movies;
+	private static List<Movie> movies;
 	private static transient Movies me;
 	private static transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
 	static
 	{
-		try
+		synchronized (Movies.class)
 		{
-			me=gson.fromJson(new JsonReader(new FileReader("Movies.json")), Users.class);
-		}
-		catch (FileNotFoundException e)
-		{
-			e.printStackTrace();
+			if (me==null)
+				try
+				{
+					me=gson.fromJson(new JsonReader(new FileReader("Movies.json")), Users.class);
+				}
+				catch (FileNotFoundException e)
+				{
+					e.printStackTrace();
+				}
 		}
 	}
 
@@ -128,6 +132,11 @@ public class Movies
 		boolean b=movies.add(movie);
 		toJson();
 		return b;
+	}
+
+	public static List<Movie> getMovies()
+	{
+		return movies;
 	}
 
 	private static void toJson()

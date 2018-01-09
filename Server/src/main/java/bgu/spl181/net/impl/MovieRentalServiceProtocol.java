@@ -50,7 +50,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		if (msg.length>2)
 		{
 			contains=false;
-			for (Users.User user : Users.users)
+			for (Users.User user : Users.getUsers())
 			{
 				if (user.getUsername().equals(msg[1]))
 					contains=true;
@@ -73,7 +73,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	{
 		if (msg.length==3 &&
 		    !connections.getConnectionHandler(connectionId).isLoggedIn() && connections.isConnected(msg[1]))
-			for (Users.User user : Users.users)
+			for (Users.User user : Users.getUsers())
 				if (user.getUsername().equals(msg[1]) && user.getPassword().equals(msg[2]))
 				{
 					connections.getConnectionHandler(connectionId).setLoggedIn(msg[1]);
@@ -132,7 +132,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestBalance()
 	{
-		for (Users.User user : Users.users)
+		for (Users.User user : Users.getUsers())
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
 			{
 				connections.send(connectionId, "ACK balance "+user.getBalance());
@@ -143,7 +143,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestBalanceAdd(String amount)
 	{
-		for (Users.User user : Users.users)
+		for (Users.User user : Users.getUsers())
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
 			{
 				user.setBalance(amount);
@@ -155,7 +155,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestInfo(String movieName)
 	{
-		for (Movies.Movie movie : Movies.movies)
+		for (Movies.Movie movie : Movies.getMovies())
 			if (movie.getName().equals(movieName))
 			{
 				connections.send(connectionId,
@@ -168,19 +168,20 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	private void requestInfo()
 	{
 		StringBuilder output=new StringBuilder();
-		for (Movies.Movie movie : Movies.movies)
+		for (Movies.Movie movie : Movies.getMovies())
 			output.append("\""+movie.getName()+"\""+" ");
 		connections.send(connectionId, "ACK"+output.toString());
 	}
 
 	private void requestRent(String movieName)
 	{
-		for (Users.User user : Users.users)
+		for (Users.User user : Users.getUsers())
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
-				for (Movies.Movie movie : Movies.movies)
+				for (Movies.Movie movie : Movies.getMovies())
 					if (movie.getName().equals(movieName))
 						if (Integer.parseInt(user.getBalance()) >= Integer.parseInt(movie.getPrice()) &&
 						    Integer.parseInt(movie.getAvailableAmount())>0 &&
+						    !movie.getBannedCountries().contains(user.getCountry()) &&
 						    user.addMovie(new Users.User.Movie(movie.getId(), movie.getName())))
 						{
 							user.setBalance("-"+movie.getPrice());
@@ -200,7 +201,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestReturn(String movieName)
 	{
-		for (Users.User user : Users.users)
+		for (Users.User user : Users.getUsers())
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
 			{
 				Iterator<Users.User.Movie> iterator=user.getMovies().iterator();
@@ -212,7 +213,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 					{
 						user.remove(movie);
 						connections.send(connectionId, "ACK return \""+movieName+"\" success");
-						for (Movies.Movie movie1 : Movies.movies)
+						for (Movies.Movie movie1 : Movies.getMovies())
 							if (movie1.getName().equals(movieName))
 							{
 								movie1.setAvailableAmount(""+(Integer.parseInt(movie1.getAvailableAmount())+1));
@@ -231,14 +232,14 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	{
 		if (Integer.parseInt(amount)>0 || Integer.parseInt(price)>0)
 		{
-			for (Users.User user : Users.users)
+			for (Users.User user : Users.getUsers())
 			{
 				if (user.getUsername()
 				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType()
 				                                                                                     .equals("admin"))
 				{
 					Boolean found=false;
-					for (Movies.Movie movie : Movies.movies)
+					for (Movies.Movie movie : Movies.getMovies())
 						if (movie.getName().equals(movieName))
 						{
 							found=true;
@@ -246,7 +247,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 						}
 					if (!found)
 					{
-						String id=""+(Integer.parseInt(Movies.movies.get(Movies.movies.size()-1).getId())+1);
+						String id=""+(Integer.parseInt(Movies.getMovies().get(Movies.getMovies().size()-1).getId())+1);
 						Movies.add(new Movies.Movie(id, movieName, price, bannedCountry, amount, amount));
 						connections.send(connectionId, "ACK addmovie \""+movieName+"\" success");
 						connections.broadcast("BROADCAST movie \""+movieName+"\" "+amount+" "+price+" ");
@@ -263,13 +264,13 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	{
 		if (Integer.parseInt(price)>0)
 		{
-			for (Users.User user : Users.users)
+			for (Users.User user : Users.getUsers())
 			{
 				if (user.getUsername()
 				        .equals(connections.getConnectionHandler(connectionId).getUsername()) && user.getType()
 				                                                                                     .equals("admin"))
 				{
-					for (Movies.Movie movie : Movies.movies)
+					for (Movies.Movie movie : Movies.getMovies())
 						if (movie.getName().equals(movieName))
 						{
 							movie.setPrice(price);
@@ -286,7 +287,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestRemoveMovie(String movieName)
 	{
-		for (Users.User user : Users.users)
+		for (Users.User user : Users.getUsers())
 			if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
 			{
 				if (!user.getType().equals("admin"))
@@ -294,7 +295,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 					connections.send(connectionId, "ERROR request remmovie failed");
 					return;
 				}
-				for (Movies.Movie movie : Movies.movies)
+				for (Movies.Movie movie : Movies.getMovies())
 				{
 					if (movie.getName().equals(movieName))
 						if (movie.getAvailableAmount().equals(movie.getTotalAmount()))
