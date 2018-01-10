@@ -59,90 +59,90 @@ public class Users
 
 		public boolean addMovie(Movie movie)
 		{
-			actsRWLock.readLock().lock();
+			readWriteLock.readLock().lock();
 			if (movies.contains(movie)){
-				actsRWLock.readLock().unlock();
-				actsRWLock.writeLock().lock();
+				readWriteLock.readLock().unlock();
+				readWriteLock.writeLock().lock();
 				movies.add(movie);
 			}
 			else
 				return false;
 			toJson();
-			actsRWLock.writeLock().unlock();
+			readWriteLock.writeLock().unlock();
 			return true;
 		}
 
 		public String getUsername()
 		{
-			actsRWLock.readLock().lock();
+			readWriteLock.readLock().lock();
 			String temp=username;
-			actsRWLock.readLock().unlock();
+			readWriteLock.readLock().unlock();
 			return temp;
 		}
 
 		public String getPassword()
 		{
-			actsRWLock.readLock().lock();
+			readWriteLock.readLock().lock();
 			String temp=password;
-			actsRWLock.readLock().unlock();
+			readWriteLock.readLock().unlock();
 			return temp;
 		}
 
 		public String getType()
 		{
-			actsRWLock.readLock().lock();
+			readWriteLock.readLock().lock();
 			String temp=type;
-			actsRWLock.readLock().unlock();
+			readWriteLock.readLock().unlock();
 			return temp;
 		}
 
 		public String getCountry()
 		{
-			actsRWLock.readLock().lock();
+			readWriteLock.readLock().lock();
 			String temp=country;
-			actsRWLock.readLock().unlock();
+			readWriteLock.readLock().unlock();
 			return temp;
 		}
 
 		public List<Movie> getMovies()
 		{
-			actsRWLock.readLock().lock();
+			readWriteLock.readLock().lock();
 			List<Movie> temp=movies;
-			actsRWLock.readLock().unlock();
+			readWriteLock.readLock().unlock();
 			return temp;
 		}
 
 		public String getBalance()
 		{
-			actsRWLock.readLock().lock();
+			readWriteLock.readLock().lock();
 			String temp=balance;
-			actsRWLock.readLock().unlock();
+			readWriteLock.readLock().unlock();
 			return temp;
 		}
 
 		public void setBalance(String balance)
 		{
-			actsRWLock.writeLock().lock();
+			readWriteLock.writeLock().lock();
 			this.balance=""+(Integer.parseInt(getBalance())+Integer.parseInt(balance));
 			toJson();
-			actsRWLock.writeLock().unlock();
+			readWriteLock.writeLock().unlock();
 		}
 
 		public boolean remove(Movie movie)
 		{
-			actsRWLock.writeLock().lock();
+			readWriteLock.writeLock().lock();
 			boolean b=movies.remove(movie);
 			toJson();
-			actsRWLock.writeLock().unlock();
+			readWriteLock.writeLock().unlock();
 			return b;
 		}
 
 		public boolean add(Movie movie)
 		{
-			actsRWLock.writeLock().lock();
+			readWriteLock.writeLock().lock();
 			boolean b=movies.add(movie);
 			toJson();
-			actsRWLock.writeLock().unlock();
+			readWriteLock.writeLock().unlock();
 			return b;
 		}
 
@@ -170,17 +170,17 @@ public class Users
 
 			public String getId()
 			{
-				actsRWLock.readLock().lock();
+				readWriteLock.readLock().lock();
 				String temp=id;
-				actsRWLock.readLock().unlock();
+				readWriteLock.readLock().unlock();
 				return temp;
 			}
 
 			public String getName()
 			{
-				actsRWLock.readLock().lock();
+				readWriteLock.readLock().lock();
 				String temp=name;
-				actsRWLock.readLock().unlock();
+				readWriteLock.readLock().unlock();
 				return temp;
 			}
 		}
@@ -188,27 +188,27 @@ public class Users
 
 	public static boolean remove(User user)
 	{
-		actsRWLock.writeLock().lock();
+		readWriteLock.writeLock().lock();
 		boolean b=users.remove(user);
 		toJson();
-		actsRWLock.writeLock().unlock();
+		readWriteLock.writeLock().unlock();
 		return b;
 	}
 
 	public static boolean add(User user)
 	{
-		actsRWLock.writeLock().lock();
+		readWriteLock.writeLock().lock();
 		boolean b=users.add(user);
 		toJson();
-		actsRWLock.writeLock().unlock();
+		readWriteLock.writeLock().unlock();
 		return b;
 	}
 
 	public static List<User> getUsers()
 	{
-		actsRWLock.readLock().lock();
+		readWriteLock.readLock().lock();
 		List<User> temp=users;
-		actsRWLock.readLock().unlock();
+		readWriteLock.readLock().unlock();
 		return temp;
 	}
 
