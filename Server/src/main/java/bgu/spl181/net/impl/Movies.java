@@ -50,6 +50,7 @@ public class Movies
 		private List<String> bannedCountries;
 		private String availableAmount;
 		private String totalAmount;
+		private static ReadWriteLock readWriteLock;
 
 		public Movie(String id, String name, String price, List<String> bannedCountries, String availableAmount, String totalAmount)
 		{

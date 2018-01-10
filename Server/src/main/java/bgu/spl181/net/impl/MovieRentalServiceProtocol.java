@@ -154,6 +154,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                 return;
             }
         connections.send(connectionId, "ERROR request info failed");
+	    Movies.getReadWriteLock().readLock().unlock();
     }
 
     private void requestInfo() {
@@ -161,27 +162,42 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
         for (Movies.Movie movie : Movies.getMovies())
             output.append("\"" + movie.getName() + "\"" + " ");
         connections.send(connectionId, "ACK" + output.toString());
+	    Movies.getReadWriteLock().readLock().unlock();
     }
 
     private void requestRent(String movieName) {
         for (Users.User user : Users.getUsers())
             if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername()))
-                for (Movies.Movie movie : Movies.getMovies())
-                    if (movie.getName().equals(movieName))
-                        if (Integer.parseInt(user.getBalance()) >= Integer.parseInt(movie.getPrice()) &&
-                                Integer.parseInt(movie.getAvailableAmount()) > 0 &&
-                                !movie.getBannedCountries().contains(user.getCountry()) &&
-                                user.addMovie(new Users.User.Movie(movie.getId(), movie.getName()))) {
-                            user.setBalance("-" + movie.getPrice());
-                            movie.setAvailableAmount("" + (Integer.parseInt(movie.getAvailableAmount()) - 1));
-                            connections.send(connectionId, "ACK rent \"" + movie.getName() + "\" success");
-                            connections.broadcast(
-                                    "BROADCAST movie \"" + movie.getName() + "\" " + movie.getAvailableAmount() + " " + movie.getPrice());
-                            return;
-                        } else {
-                            connections.send(connectionId, "ERROR request rent failed");
-                            return;
-                        }
+            {
+	            for (Movies.Movie movie : Movies.getMovies())
+		            if (movie.getName().equals(movieName))
+			            if (Integer.parseInt(user.getBalance()) >= Integer.parseInt(movie.getPrice()) &&
+			                Integer.parseInt(movie.getAvailableAmount())>0 &&
+			                !movie.getBannedCountries().contains(user.getCountry()) &&
+			                user.addMovie(new Users.User.Movie(movie.getId(), movie.getName())))
+			            {
+				            user.setBalance("-"+movie.getPrice());
+				            movie.setAvailableAmount(""+(Integer.parseInt(movie.getAvailableAmount())-1));
+				            connections.send(connectionId, "ACK rent \""+movie.getName()+"\" success");
+				            connections.broadcast(
+						            "BROADCAST movie \""+movie.getName()+"\" "+movie.getAvailableAmount()+" "+movie.getPrice());
+				            Movies.getReadWriteLock().readLock().unlock();
+				            Users.getReadWriteLock().readLock().unlock();
+				            return;
+			            }
+			            else
+			            {
+				            connections.send(connectionId, "ERROR request rent failed");
+				            Movies.getReadWriteLock().readLock().unlock();
+				            Users.getReadWriteLock().readLock().unlock();
+				            return;
+			            }
+	            Movies.getReadWriteLock().readLock().unlock();
+	            Users.getReadWriteLock().readLock().unlock();
+	            connections.send(connectionId, "ERROR request rent failed");
+	            return;
+            }
+	    Users.getReadWriteLock().readLock().unlock();
         connections.send(connectionId, "ERROR request rent failed");
     }
 
@@ -219,6 +235,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                             found = true;
                             break;
                         }
+                    Movies.getReadWriteLock().readLock().unlock();
                     if (!found) {
                         bannedCountry = bannedCountry.trim().substring(1, bannedCountry.length() - 2);
                         List<String> list = new ArrayList<>(Arrays.asList(bannedCountry.split("\" \"")));
@@ -226,11 +243,13 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                         Movies.add(new Movies.Movie(id, movieName, price, list, amount, amount));
                         connections.send(connectionId, "ACK addmovie \"" + movieName + "\" success");
                         connections.broadcast("BROADCAST movie \"" + movieName + "\" " + amount + " " + price + " ");
+                        Users.getReadWriteLock().readLock().unlock();
                         return;
                     } else
                         break;
                 }
             }
+	        Users.getReadWriteLock().readLock().unlock();
         }
         connections.send(connectionId, "ERROR request addmovie failed");
     }
@@ -245,10 +264,14 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                             movie.setPrice(price);
                             connections.send(connectionId, "ACK changeprice \"" + movieName + "\" success");
                             connections.broadcast("BROADCAST movie \"" + movieName + "\" " + movie.getAvailableAmount() + " " + price + " ");
+                            Movies.getReadWriteLock().readLock().unlock();
+                            Users.getReadWriteLock().readLock().unlock();
                             return;
                         }
+                    Movies.getReadWriteLock().readLock().unlock();
                 }
             }
+            Users.getReadWriteLock().readLock().unlock();
         }
         connections.send(connectionId, "ERROR request changeprice failed");
     }
@@ -266,12 +289,17 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                             Movies.remove(movie);
                             connections.send(connectionId, "ACK remmovie \"" + movieName + "\" success");
                             connections.broadcast("BROADCAST movie \"" + movieName + "\" removed");
+	                        Movies.getReadWriteLock().readLock().unlock();
+	                        Users.getReadWriteLock().readLock().unlock();
                             return;
                         }
                 }
+                Movies.getReadWriteLock().readLock().unlock();
+                Users.getReadWriteLock().readLock().unlock();
                 connections.send(connectionId, "ERROR request remmovie failed");
                 return;
             }
+        Users.getReadWriteLock().readLock().unlock();
         connections.send(connectionId, "ERROR request remmovie failed");
     }
 }
