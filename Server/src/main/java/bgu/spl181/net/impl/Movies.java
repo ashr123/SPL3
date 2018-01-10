@@ -17,7 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Movies
 {
 	private static List<Movie> movies;
-	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock();
+	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock(true);
 	private static transient Movies me;
 	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 

@@ -18,7 +18,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Users
 {
 	private static List<User> users;
-	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock();
+	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock(true);
 	private static transient Users me;
 	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
