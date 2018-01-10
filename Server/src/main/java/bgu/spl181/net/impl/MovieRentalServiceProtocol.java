@@ -212,8 +212,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                             break;
                         }
                     if (!found) {
-                        bannedCountry.trim();
-                        bannedCountry = bannedCountry.substring(1, bannedCountry.length() - 2);
+                        bannedCountry = bannedCountry.trim().substring(1, bannedCountry.length() - 2);
                         List<String> list = new ArrayList<>(Arrays.asList(bannedCountry.split("\" \"")));
                         String id = "" + (Integer.parseInt(Movies.getMovies().get(Movies.getMovies().size() - 1).getId()) + 1);
                         Movies.add(new Movies.Movie(id, movieName, price, list, amount, amount));
