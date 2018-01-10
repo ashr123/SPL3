@@ -4,16 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Users
 {
@@ -60,48 +56,35 @@ public class Users
 		public boolean addMovie(Movie movie)
 		{
 			readWriteLock.readLock().lock();
-			if (movies.contains(movie)){
-				readWriteLock.readLock().unlock();
-				readWriteLock.writeLock().lock();
-				movies.add(movie);
-			}
-			else
+			if (movies.contains(movie))
 				return false;
-			toJson();
+			readWriteLock.readLock().unlock();
+			readWriteLock.writeLock().lock();
+			boolean b=movies.add(movie);
+			if (b)
+				toJson();
 			readWriteLock.writeLock().unlock();
-			return true;
+			return b;
 		}
 
 		public String getUsername()
 		{
-			readWriteLock.readLock().lock();
-			String temp=username;
-			readWriteLock.readLock().unlock();
-			return temp;
+			return username;
 		}
 
 		public String getPassword()
 		{
-			readWriteLock.readLock().lock();
-			String temp=password;
-			readWriteLock.readLock().unlock();
-			return temp;
+			return password;
 		}
 
 		public String getType()
 		{
-			readWriteLock.readLock().lock();
-			String temp=type;
-			readWriteLock.readLock().unlock();
-			return temp;
+			return type;
 		}
 
 		public String getCountry()
 		{
-			readWriteLock.readLock().lock();
-			String temp=country;
-			readWriteLock.readLock().unlock();
-			return temp;
+			return country;
 		}
 
 		public List<Movie> getMovies()
@@ -170,18 +153,12 @@ public class Users
 
 			public String getId()
 			{
-				readWriteLock.readLock().lock();
-				String temp=id;
-				readWriteLock.readLock().unlock();
-				return temp;
+				return id;
 			}
 
 			public String getName()
 			{
-				readWriteLock.readLock().lock();
-				String temp=name;
-				readWriteLock.readLock().unlock();
-				return temp;
+				return name;
 			}
 		}
 	}
