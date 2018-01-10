@@ -90,9 +90,7 @@ public class Users
 		public List<Movie> getMovies()
 		{
 			readWriteLock.readLock().lock();
-			List<Movie> temp=movies;
-			readWriteLock.readLock().unlock();
-			return temp;
+			return movies;
 		}
 
 		public String getBalance()
@@ -184,9 +182,7 @@ public class Users
 	public static List<User> getUsers()
 	{
 		readWriteLock.readLock().lock();
-		List<User> temp=users;
-		readWriteLock.readLock().unlock();
-		return temp;
+		return users;
 	}
 
 	public static ReadWriteLock getReadWriteLock()
