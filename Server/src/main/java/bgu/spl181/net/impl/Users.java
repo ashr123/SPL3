@@ -12,12 +12,15 @@ import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Users
 {
 	private static List<User> users;
-	private transient static Users me;
-	private transient static Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
+	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock();
+	private static transient Users me;
+	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
 	static
 	{

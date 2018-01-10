@@ -11,12 +11,15 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Movies
 {
 	private static List<Movie> movies;
+	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock();
 	private static transient Movies me;
-	private static transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
+	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
 	static
 	{
@@ -91,11 +94,11 @@ public class Movies
 			return bannedCountries;
 		}
 
-//		public void setBannedCountries(String bannedCountries)
-//		{
-//			this.bannedCountries=bannedCountries;
-//			toJson();
-//		}
+		//		public void setBannedCountries(String bannedCountries)
+		//		{
+		//			this.bannedCountries=bannedCountries;
+		//			toJson();
+		//		}
 
 		public String getAvailableAmount()
 		{
