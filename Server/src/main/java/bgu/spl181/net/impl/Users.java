@@ -212,6 +212,11 @@ public class Users
 		return temp;
 	}
 
+	public static ReadWriteLock getReadWriteLock()
+	{
+		return readWriteLock;
+	}
+
 	private static void toJson()
 	{
 		try (Writer writer=new FileWriter("Users.json"))
