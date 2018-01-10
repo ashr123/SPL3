@@ -39,11 +39,11 @@ public class Movies
 		private String id;
 		private String name;
 		private String price;
-		private String bannedCountries;
+		private List<String> bannedCountries;
 		private String availableAmount;
 		private String totalAmount;
 
-		public Movie(String id, String name, String price, String bannedCountries, String availableAmount, String totalAmount)
+		public Movie(String id, String name, String price, List<String> bannedCountries, String availableAmount, String totalAmount)
 		{
 			this.id=id;
 			this.name=name;
@@ -86,16 +86,16 @@ public class Movies
 			toJson();
 		}
 
-		public String getBannedCountries()
+		public List<String> getBannedCountries()
 		{
 			return bannedCountries;
 		}
 
-		public void setBannedCountries(String bannedCountries)
-		{
-			this.bannedCountries=bannedCountries;
-			toJson();
-		}
+//		public void setBannedCountries(String bannedCountries)
+//		{
+//			this.bannedCountries=bannedCountries;
+//			toJson();
+//		}
 
 		public String getAvailableAmount()
 		{

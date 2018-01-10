@@ -8,12 +8,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
 
 public class TPCMain
 {
 	private static final Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
-	static Users users=new Users();
+	private static Users users=new Users();
 
 //	static
 //	{
@@ -32,6 +33,9 @@ public class TPCMain
 	{
 //		Users.users.get(0).getMovies().get(0).getId();
 		//Users.add(new Users.User("bbb", "aaa", "xcx", "israel", "3456"));
+		String[] msg="\"aaz\" \"sss\" \"ddd\" \"fff\"".replaceAll("\"", "").split(" ");
+		List<String> list=Arrays.asList(msg);
+
 		try (Writer writer=new FileWriter("Output.json"))
 		{
 			gson.toJson(users, writer);

@@ -3,7 +3,10 @@ package bgu.spl181.net.impl;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl181.net.api.bidi.Connections;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 {
@@ -247,13 +250,15 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 						}
 					if (!found)
 					{
+						List<String> list=new ArrayList<>(Arrays.asList(bannedCountry.replaceAll("\"", "").split(" ")));
 						String id=""+(Integer.parseInt(Movies.getMovies().get(Movies.getMovies().size()-1).getId())+1);
-						Movies.add(new Movies.Movie(id, movieName, price, bannedCountry, amount, amount));
+						Movies.add(new Movies.Movie(id, movieName, price, list, amount, amount));
 						connections.send(connectionId, "ACK addmovie \""+movieName+"\" success");
 						connections.broadcast("BROADCAST movie \""+movieName+"\" "+amount+" "+price+" ");
 						return;
 					}
-					else break;
+					else
+						break;//TODO ???
 				}
 			}
 		}
