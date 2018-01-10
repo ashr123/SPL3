@@ -37,6 +37,11 @@ public class Movies
 		}
 	}
 
+	public static ReadWriteLock getReadWriteLock()
+	{
+		return readWriteLock;
+	}
+
 	public static class Movie
 	{
 		private String id;

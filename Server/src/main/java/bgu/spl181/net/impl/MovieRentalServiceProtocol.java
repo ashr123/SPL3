@@ -50,6 +50,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                 if (user.getUsername().equals(msg[1]))
                     contains = true;
             }
+            Users.getReadWriteLock().readLock().unlock();
         }
         if (!contains) {
             String country = "";
@@ -70,9 +71,11 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                 if (user.getUsername().equals(msg[1]) && user.getPassword().equals(msg[2])) {
                     connections.getConnectionHandler(connectionId).setLoggedIn(msg[1]);
                     connections.send(connectionId, "ACK login succeeded");
+	                Users.getReadWriteLock().readLock().unlock();
                     return;
                 }
         connections.send(connectionId, "ERROR login failed");
+	    Users.getReadWriteLock().readLock().unlock();
     }
 
     private void signOut() {
@@ -121,9 +124,11 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
         for (Users.User user : Users.getUsers())
             if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername())) {
                 connections.send(connectionId, "ACK balance " + user.getBalance());
+	            Users.getReadWriteLock().readLock().unlock();
                 return;
             }
         connections.send(connectionId, "ERROR request balance info failed");
+	    Users.getReadWriteLock().readLock().unlock();
     }
 
     private void requestBalanceAdd(String amount) {
@@ -131,9 +136,11 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
             if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername())) {
                 user.setBalance(amount);
                 connections.send(connectionId, "ACK balance " + user.getBalance() + " added " + amount);
+	            Users.getReadWriteLock().readLock().unlock();
                 return;
             }
         connections.send(connectionId, "ERROR request balance add failed");
+	    Users.getReadWriteLock().readLock().unlock();
     }
 
     private void requestInfo(String movieName) {
@@ -143,6 +150,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                 for (String countries : movie.getBannedCountries())
                     bannedCountries.append("\"" + countries + "\" ");
                 connections.send(connectionId, "ACK \"" + movieName + "\" " + movie.getAvailableAmount() + " " + movie.getPrice() + " " + bannedCountries);
+	            Movies.getReadWriteLock().readLock().unlock();
                 return;
             }
         connections.send(connectionId, "ERROR request info failed");
