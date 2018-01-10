@@ -11,13 +11,18 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Users
 {
-	private static List<User> users;
+	//private static final transient Map<User, User> users=new ConcurrentHashMap<>();
+	private static Collection<User> users;
 	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock(true);
 	private static transient Users me;
 	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
@@ -30,6 +35,7 @@ public class Users
 				try
 				{
 					me=gson.fromJson(new JsonReader(new FileReader("Users.json")), Users.class);
+					users = new ConcurrentLinkedQueue<>(users);
 				}
 				catch (FileNotFoundException e)
 				{
@@ -183,7 +189,7 @@ public class Users
 		return b;
 	}
 
-	public static List<User> getUsers()
+	public static Collection<User> getUsers()
 	{
 		readWriteLock.readLock().lock();
 		return users;

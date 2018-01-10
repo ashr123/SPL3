@@ -69,9 +69,9 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                 !connections.getConnectionHandler(connectionId).isLoggedIn() && connections.isConnected(msg[1]))
             for (Users.User user : Users.getUsers())
                 if (user.getUsername().equals(msg[1]) && user.getPassword().equals(msg[2])) {
+	                Users.getReadWriteLock().readLock().unlock();
                     connections.getConnectionHandler(connectionId).setLoggedIn(msg[1]);
                     connections.send(connectionId, "ACK login succeeded");
-	                Users.getReadWriteLock().readLock().unlock();
                     return;
                 }
         connections.send(connectionId, "ERROR login failed");
@@ -123,8 +123,8 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
     private void requestBalance() {
         for (Users.User user : Users.getUsers())
             if (user.getUsername().equals(connections.getConnectionHandler(connectionId).getUsername())) {
-                connections.send(connectionId, "ACK balance " + user.getBalance());
 	            Users.getReadWriteLock().readLock().unlock();
+                connections.send(connectionId, "ACK balance " + user.getBalance());
                 return;
             }
         connections.send(connectionId, "ERROR request balance info failed");
