@@ -68,21 +68,9 @@ public class Movies
 			return id;
 		}
 
-		public void setId(String id)
-		{
-			this.id=id;
-			toJson();
-		}
-
 		public String getName()
 		{
 			return name;
-		}
-
-		public void setName(String name)
-		{
-			this.name=name;
-			toJson();
 		}
 
 		public String getPrice()
@@ -117,12 +105,6 @@ public class Movies
 			return totalAmount;
 		}
 
-		public void setTotalAmount(String totalAmount)
-		{
-			this.totalAmount=totalAmount;
-			toJson();
-		}
-
 		public void acquire()
 		{
 			try
@@ -143,20 +125,25 @@ public class Movies
 
 	public static boolean remove(Movie movie)
 	{
+		readWriteLock.writeLock().lock();
 		boolean b=movies.remove(movie);
 		toJson();
+		readWriteLock.writeLock().unlock();
 		return b;
 	}
 
 	public static boolean add(Movie movie)
 	{
+		readWriteLock.writeLock().lock();
 		boolean b=movies.add(movie);
 		toJson();
+		readWriteLock.writeLock().unlock();
 		return b;
 	}
 
 	public static List<Movie> getMovies()
 	{
+		readWriteLock.readLock().lock();
 		return movies;
 	}
 

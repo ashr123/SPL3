@@ -32,7 +32,7 @@ public class Users
 				try
 				{
 					me=gson.fromJson(new JsonReader(new FileReader("Users.json")), Users.class);
-					users=new ConcurrentLinkedQueue<>(users);
+//					users=new ConcurrentLinkedQueue<>(users);
 				}
 				catch (FileNotFoundException e)
 				{
