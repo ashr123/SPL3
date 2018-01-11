@@ -123,9 +123,21 @@ public class Movies
 			toJson();
 		}
 
-		public Semaphore getSemaphore()
+		public void acquire()
 		{
-			return semaphore;
+			try
+			{
+				semaphore.acquire();
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		public void release()
+		{
+			semaphore.release();
 		}
 	}
 
