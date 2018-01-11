@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -47,10 +48,10 @@ public class Movies
 		private String id;
 		private String name;
 		private String price;
-		private List<String> bannedCountries;
+		private final List<String> bannedCountries;
 		private String availableAmount;
 		private String totalAmount;
-		private static ReadWriteLock readWriteLock;
+		private final transient Semaphore semaphore=new Semaphore(1, true);
 
 		public Movie(String id, String name, String price, List<String> bannedCountries, String availableAmount, String totalAmount)
 		{
@@ -120,6 +121,11 @@ public class Movies
 		{
 			this.totalAmount=totalAmount;
 			toJson();
+		}
+
+		public Semaphore getSemaphore()
+		{
+			return semaphore;
 		}
 	}
 
