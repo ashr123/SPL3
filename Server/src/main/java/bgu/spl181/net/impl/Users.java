@@ -65,15 +65,11 @@ public class Users
 
 		public boolean addMovie(Movie movie)
 		{
-			readWriteLock.readLock().lock();
 			if (movies.contains(movie))
 				return false;
-			readWriteLock.readLock().unlock();
-			readWriteLock.writeLock().lock();
 			boolean b=movies.add(movie);
 			if (b)
 				toJson();
-			readWriteLock.writeLock().unlock();
 			return b;
 		}
 
@@ -99,41 +95,34 @@ public class Users
 
 		public List<Movie> getMovies()
 		{
-			readWriteLock.readLock().lock();
 			return movies;
 		}
 
 		public String getBalance()
 		{
-			readWriteLock.readLock().lock();
-			String temp=balance;
-			readWriteLock.readLock().unlock();
-			return temp;
+			return balance;
 		}
 
 		public void setBalance(String balance)
 		{
-			readWriteLock.writeLock().lock();
 			this.balance=""+(Integer.parseInt(getBalance())+Integer.parseInt(balance));
 			toJson();
-			readWriteLock.writeLock().unlock();
 		}
 
 		public boolean remove(Movie movie)
 		{
-			readWriteLock.writeLock().lock();
 			boolean b=movies.remove(movie);
 			toJson();
-			readWriteLock.writeLock().unlock();
 			return b;
 		}
 
 		public boolean add(Movie movie)
 		{
-			readWriteLock.writeLock().lock();
+			if (movies.contains(movie))
+				return false;
 			boolean b=movies.add(movie);
-			toJson();
-			readWriteLock.writeLock().unlock();
+			if (b)
+				toJson();
 			return b;
 		}
 

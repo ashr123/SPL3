@@ -100,12 +100,6 @@ public class Movies
 			return bannedCountries;
 		}
 
-		//		public void setBannedCountries(String bannedCountries)
-		//		{
-		//			this.bannedCountries=bannedCountries;
-		//			toJson();
-		//		}
-
 		public String getAvailableAmount()
 		{
 			return availableAmount;
