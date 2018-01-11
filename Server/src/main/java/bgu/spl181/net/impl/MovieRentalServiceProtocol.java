@@ -215,12 +215,13 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
                         connections.send(connectionId, "ACK return \"" + movieName + "\" success");
                         for (Movies.Movie movie1 : Movies.getMovies())
                             if (movie1.getName().equals(movieName)) {
-
-                                movie1.setAvailableAmount("" + (Integer.parseInt(movie1.getAvailableAmount()) + 1));
-
-                                connections.broadcast("BROADCAST movie \"" + movieName + "\" " + movie1.getAvailableAmount() + " " + movie1.getPrice() + " ");
-                                Users.getReadWriteLock().writeLock().unlock();
-                                return;
+                                 if(Integer.parseInt(movie1.getAvailableAmount())>0)
+                                 {
+                                     movie1.setAvailableAmount(""+(Integer.parseInt(movie1.getAvailableAmount())+1));
+                                     connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie1.getAvailableAmount()+" "+movie1.getPrice()+" ");
+                                     Users.getReadWriteLock().writeLock().unlock();
+                                     return;
+                                 }
                             }
                     }
                     break;
