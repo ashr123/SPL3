@@ -1,15 +1,6 @@
-#include <utility>
-
 #include "../include/connectionHandler.h"
 
 using boost::asio::ip::tcp;
-
-using namespace std;
-//using std::cin;
-//using std::cout;
-//using std::cerr;
-//using std::endl;
-//using std::string;
 
 ConnectionHandler::ConnectionHandler(string host, long port) :
 		host_(move(host)), port_(port), io_service_(), socket_(io_service_)
@@ -25,7 +16,8 @@ bool ConnectionHandler::connect()
 	cout<<"Starting connect to "<<host_<<":"<<port_<<endl;
 	try
 	{
-		tcp::endpoint endpoint(boost::asio::ip::address::from_string(host_), static_cast<unsigned short>(port_)); // the server endpoint
+		tcp::endpoint endpoint(boost::asio::ip::address::from_string(host_),
+		                       static_cast<unsigned short>(port_)); // the server endpoint
 		boost::system::error_code error;
 		socket_.connect(endpoint, error);
 		if (error)

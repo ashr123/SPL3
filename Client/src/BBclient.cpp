@@ -7,57 +7,57 @@ int main(int argc, char *argv[])
 {
 	if (argc<3)
 	{
-		std::cerr<<"Usage: "<<argv[0]<<" host port"<<std::endl<<std::endl;
+		cerr<<"Usage: "<<argv[0]<<" host port"<<endl<<endl;
 		return -1;
 	}
-	std::string host=argv[1];
-	long port=(strtol(argv[2], nullptr, 10));
+	string host=argv[1];
+	long port=strtol(argv[2], nullptr, 10);
 	
 	ConnectionHandler connectionHandler(host, port);
 	if (!connectionHandler.connect())
 	{
-		std::cerr<<"Cannot connect to "<<host<<":"<<port<<std::endl;
+		cerr<<"Cannot connect to "<<host<<":"<<port<<endl;
 		return 1;
 	}
 	
-	//From here we will see the rest of the ehco client implementation:
+	//From here we will see the rest of the echo client implementation:
 	while (true)
 	{
-		const short bufsize=1024;
-		char buf[bufsize];
-		std::cin.getline(buf, bufsize);
-		std::string line(buf);
+		const short bufSize=1024;
+		char buf[bufSize];
+		cin.getline(buf, bufSize);
+		string line(buf);
 		unsigned long len=line.length();
 		if (!connectionHandler.sendLine(line))
 		{
-			std::cout<<"Disconnected. Exiting...\n"<<std::endl;
+			cout<<"Disconnected. Exiting...\n"<<endl;
 			break;
 		}
 		// connectionHandler.sendLine(line) appends '\n' to the message. Therefor we send len+1 bytes.
-		std::cout<<"Sent "<<len+1<<" bytes to server"<<std::endl;
+		cout<<"Sent "<<len+1<<" bytes to server"<<endl;
 		
 		
 		// We can use one of three options to read data from the server:
 		// 1. Read a fixed number of characters
-		// 2. Read a line (up to the newline character using the getline() buffered reader
+		// 2. Read a line (up to the newline character using the getLine() buffered reader
 		// 3. Read up to the null character
-		std::string answer;
+		string answer;
 		// Get back an answer: by using the expected number of bytes (len bytes + newline delimiter)
-		// We could also use: connectionHandler.getline(answer) and then get the answer without the newline char at the end
+		// We could also use: connectionHandler.getLine(answer) and then get the answer without the newline char at the end
 		if (!connectionHandler.getLine(answer))
 		{
-			std::cout<<"Disconnected. Exiting...\n"<<std::endl;
+			cout<<"Disconnected. Exiting...\n"<<endl;
 			break;
 		}
 		
 		len=answer.length();
-		// A C string must end with a 0 char delimiter.  When we filled the answer buffer from the socket
+		// A C string must end with a 0 char delimiter. When we filled the answer buffer from the socket
 		// we filled up to the \n char - we must make sure now that a 0 char is also present. So we truncate last character.
 		answer.resize(len-1);
-		std::cout<<"Reply: "<<answer<<" "<<len<<" bytes "<<std::endl<<std::endl;
+		cout<<"Reply: "<<answer<<" "<<len<<" bytes "<<endl<<endl;
 		if (answer=="bye")
 		{
-			std::cout<<"Exiting...\n"<<std::endl;
+			cout<<"Exiting...\n"<<endl;
 			break;
 		}
 	}

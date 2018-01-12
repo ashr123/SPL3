@@ -1,11 +1,12 @@
 #ifndef CONNECTION_HANDLER__
 #define CONNECTION_HANDLER__
 
-#include <string>
 #include <iostream>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
+
+using namespace std;
 
 class ConnectionHandler
 {
@@ -20,34 +21,61 @@ public:
 	
 	virtual ~ConnectionHandler();
 	
-	// Connect to the remote machine
+	/**
+	 * Connect to the remote machine
+	 * @return true if connection succeeded
+	 */
 	bool connect();
 	
-	// Read a fixed number of bytes from the server - blocking.
-	// Returns false in case the connection is closed before bytesToRead bytes can be read.
+	/**
+	 * Read a fixed number of bytes from the server - blocking.
+	 * @param bytes
+	 * @param bytesToRead
+	 * @return false in case the connection is closed before bytesToRead bytes can be read
+	 */
 	bool getBytes(char bytes[], unsigned int bytesToRead);
 	
-	// Send a fixed number of bytes from the client - blocking.
-	// Returns false in case the connection is closed before all the data is sent.
+	/**
+	 * Send a fixed number of bytes from the client - blocking
+	 * @param bytes
+	 * @param bytesToWrite
+	 * @return false in case the connection is closed before all the data is sent
+	 */
 	bool sendBytes(const char bytes[], int bytesToWrite);
 	
-	// Read an ascii line from the server
-	// Returns false in case connection closed before a newline can be read.
-	bool getLine(std::string &line);
+	/**
+	 * Read an ascii line from the server
+	 * @param line
+	 * @return false in case connection closed before a newline can be read
+	 */
+	bool getLine(string &line);
 	
-	// Send an ascii line from the server
-	// Returns false in case connection closed before all the data is sent.
-	bool sendLine(std::string &line);
+	/**
+	 * Send an ascii line from the server
+	 * @param line
+	 * @return false in case connection closed before all the data is sent
+	 */
+	bool sendLine(string &line);
 	
-	// Get Ascii data from the server until the delimiter character
-	// Returns false in case connection closed before null can be read.
-	bool getFrameAscii(std::string &frame, char delimiter);
+	/**
+	 * Get Ascii data from the server until the delimiter character
+	 * @param frame
+	 * @param delimiter
+	 * @return false in case connection closed before null can be read
+	 */
+	bool getFrameAscii(string &frame, char delimiter);
 	
-	// Send a message to the remote host.
-	// Returns false in case connection is closed before all the data is sent.
-	bool sendFrameAscii(const std::string &frame, char delimiter);
+	/**
+	 * Send a message to the remote host
+	 * @param frame
+	 * @param delimiter
+	 * @return false in case connection is closed before all the data is sent
+	 */
+	bool sendFrameAscii(const string &frame, char delimiter);
 	
-	// Close down the connection properly.
+	/**
+	 * Close down the connection properly
+	 */
 	void close();
 	
 }; //class ConnectionHandler
