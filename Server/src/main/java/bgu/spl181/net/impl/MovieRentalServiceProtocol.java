@@ -54,10 +54,8 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		{
 			contains=false;
 			for (Users.User user : Users.getUsers())
-			{
 				if (user.getUsername().equals(msg[1]))
 					contains=true;
-			}
 			Users.getReadWriteLock().readLock().unlock();
 		}
 		if (!contains)
@@ -260,7 +258,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 								movie1.release();
 							}
 					}
-					break;
+//					break;
 				}
 			}
 		Movies.getReadWriteLock().readLock().unlock();
