@@ -13,7 +13,11 @@ class ConnectionHandler
 private:
 	const std::string host_;
 	long port_;
-	boost::asio::io_service io_service_;   // Provides core I/O functionality
+	
+	/**
+	 * Provides core I/O functionality
+	 */
+	boost::asio::io_service io_service_;
 	tcp::socket socket_;
 
 public:
@@ -78,6 +82,6 @@ public:
 	 */
 	void close();
 	
-}; //class ConnectionHandler
+};
 
 #endif

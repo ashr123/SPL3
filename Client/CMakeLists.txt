@@ -6,8 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_FILES
         include/connectionHandler.h
         src/BBclient.cpp
-        src/connectionHandler.cpp
-        )
+        src/connectionHandler.cpp)
 
 
 find_package(Boost 1.58.0 COMPONENTS system filesystem REQUIRED)
