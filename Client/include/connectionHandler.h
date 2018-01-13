@@ -13,7 +13,6 @@ class ConnectionHandler
 private:
 	const std::string host_;
 	long port_;
-	
 	/**
 	 * Provides core I/O functionality
 	 */
