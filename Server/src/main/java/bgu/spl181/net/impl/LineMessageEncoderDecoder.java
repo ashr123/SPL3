@@ -42,6 +42,6 @@ public class LineMessageEncoderDecoder implements MessageEncoderDecoder<String>
 		//this is not actually required as it is the default encoding in java.
 		String result=new String(bytes, 0, len, StandardCharsets.UTF_8);
 		len=0;
-		return result;
+		return result.charAt(result.length()-1)=='\r' ? result.substring(0, result.length()-1) : result;
 	}
 }

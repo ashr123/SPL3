@@ -11,8 +11,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TPCMain
 {
@@ -34,6 +37,15 @@ public class TPCMain
 
 	public static void main(String[] args)
 	{
+		//String[] msg="a b    c  d  e  g  j r   e    x".split(" ", 6);
+//		String str="Location \"Welcome  to india\" Bangalore "+
+//		           "Channai     \"IT city\"     Mysore";
+//
+//		List<String> list=new ArrayList<>();
+//		Matcher m=Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(str);
+//		while (m.find())
+//			list.add(m.group(1).replace("\"", ""));
+
 		Server.threadPerClient(
 				Integer.parseInt(args[0]), //port
 				MovieRentalServiceProtocol::new, //protocol factory
