@@ -38,9 +38,7 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead)
 	try
 	{
 		while (!error && bytesToRead>tmp)
-		{
 			tmp+=socket_.read_some(boost::asio::buffer(bytes+tmp, bytesToRead-tmp), error);
-		}
 		if (error)
 			throw boost::system::system_error(error);
 	}
@@ -59,9 +57,7 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite)
 	try
 	{
 		while (!error && bytesToWrite>tmp)
-		{
 			tmp+=socket_.write_some(boost::asio::buffer(bytes+tmp, static_cast<size_t>(bytesToWrite-tmp)), error);
-		}
 		if (error)
 			throw boost::system::system_error(error);
 	}
@@ -107,13 +103,11 @@ bool ConnectionHandler::getFrameAscii(std::string &frame, char delimiter)
 bool ConnectionHandler::sendFrameAscii(const std::string &frame, char delimiter)
 {
 	bool result=sendBytes(frame.c_str(), static_cast<int>(frame.length()));
-	if (!result) return false;
+	if (!result)
+		return false;
 	return sendBytes(&delimiter, 1);
 }
 
-/**
- * Close down the connection properly.
- */
 void ConnectionHandler::close()
 {
 	try
