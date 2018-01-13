@@ -11,7 +11,7 @@ using namespace std;
 class ConnectionHandler
 {
 private:
-	const std::string host_;
+	const string host_;
 	long port_;
 	/**
 	 * Provides core I/O functionality
@@ -20,7 +20,7 @@ private:
 	tcp::socket socket_;
 
 public:
-	ConnectionHandler(std::string host, long port);
+	ConnectionHandler(string host, long port);
 	
 	virtual ~ConnectionHandler();
 	
