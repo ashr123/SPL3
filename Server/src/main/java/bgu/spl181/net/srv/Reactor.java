@@ -2,15 +2,22 @@ package bgu.spl181.net.srv;
 
 import bgu.spl181.net.api.MessageEncoderDecoder;
 import bgu.spl181.net.api.bidi.BidiMessagingProtocol;
+import bgu.spl181.net.api.bidi.Connections;
+import bgu.spl181.net.impl.ImplConnections;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.*;
+import java.nio.channels.ClosedSelectorException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Supplier;
 
 public class Reactor<T> implements Server<T>
 {
+	private int counter;
 	private final int port;
 	private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
 	private final Supplier<MessageEncoderDecoder<T>> readerFactory;
@@ -18,6 +25,7 @@ public class Reactor<T> implements Server<T>
 	private final ConcurrentLinkedQueue<Runnable> selectorTasks=new ConcurrentLinkedQueue<>();
 	private Selector selector;
 	private Thread selectorThread;
+	private Connections<T> connections=new ImplConnections<>();
 
 	public Reactor(int numThreads,
 	               int port,
@@ -89,11 +97,14 @@ public class Reactor<T> implements Server<T>
 	{
 		SocketChannel clientChan=serverChan.accept();
 		clientChan.configureBlocking(false);
+		BidiMessagingProtocol<T> protocol=protocolFactory.get();
 		final NonBlockingConnectionHandler<T> handler=new NonBlockingConnectionHandler<>(
 				readerFactory.get(),
-				protocolFactory.get(),
+				protocol,
 				clientChan,
 				this);
+		protocol.start(counter, connections);
+		connections.add(counter++, handler);
 		clientChan.register(selector, SelectionKey.OP_READ, handler);
 	}
 

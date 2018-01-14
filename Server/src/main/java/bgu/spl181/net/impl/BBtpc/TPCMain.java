@@ -46,11 +46,10 @@ public class TPCMain
 //		while (m.find())
 //			list.add(m.group(1).replace("\"", ""));
 
-		Server.threadPerClient(
-				Integer.parseInt(args[0]), //port
-				MovieRentalServiceProtocol::new, //protocol factory
-				LineMessageEncoderDecoder::new //message encoder decoder factory
-		                      ).serve();
+		Server.threadPerClient(Integer.parseInt(args[0]), //port
+		                       MovieRentalServiceProtocol::new, //protocol factory
+		                       LineMessageEncoderDecoder::new //message encoder decoder factory
+		                       ).serve();
 //		Users.users.get(0).getMovies().get(0).getId();
 		//Users.add(new Users.User("bbb", "aaa", "xcx", "israel", "3456"));
 //		String[] msg="\"aaz\" \"sss\" \"ddd\" \"fff\"".replaceAll("\"", "").split(" ");
