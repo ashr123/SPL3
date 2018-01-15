@@ -1,3 +1,4 @@
+#include <boost/system/error_code.hpp>
 #include "../include/connectionHandler.h"
 
 using boost::asio::ip::tcp;
