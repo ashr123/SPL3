@@ -106,12 +106,16 @@ public class Movies
 			return totalAmount;
 		}
 
-		public synchronized void acquire()
+		public void acquire()
 		{
+			if (semaphore==null)
+				synchronized (this)
+				{
+					if (semaphore==null)
+						semaphore=new Semaphore(1, true);
+				}
 			try
 			{
-				if (semaphore==null)
-					semaphore=new Semaphore(1, true);
 				semaphore.acquire();
 			}
 			catch (InterruptedException e)
