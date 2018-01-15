@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 {
@@ -24,7 +26,17 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 	@Override
 	public void process(String message)
 	{
-		String[] msg=message.split(" ", 6);
+		List<String> list=new ArrayList<>();
+		Matcher m=Pattern.compile("([^\"]\\S*|\".+?\")\\s*").matcher(message);
+		while (m.find())
+			list.add(m.group(1).replace("\"", ""));
+		String[] msg=new String[list.size()];
+		list.toArray(msg);
+		if (msg.length==0)
+		{
+			connections.send(connectionId, "ERROR request is empty!!");
+			return;
+		}
 		switch (msg[0])
 		{
 			case "REGISTER":
@@ -38,6 +50,9 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				break;
 			case "REQUEST":
 				request(msg);
+				break;
+			default:
+				connections.send(connectionId, "ERROR request type "+msg[0]+" not legal!!");
 		}
 	}
 
@@ -105,7 +120,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		switch (msg[1])
 		{
 			case "balance":
-				if (msg[2].equals("add"))
+				if (msg.length>3 && msg[2].equals("add"))
 					requestBalanceAdd(msg[3]);
 				else
 					requestBalance();
@@ -123,16 +138,16 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				requestReturn(msg[2]);
 				break;
 			case "addmovie":
-				if (msg.length==5)
-					requestAddMovie(msg[2], msg[3], msg[4], "");
-				else
-					requestAddMovie(msg[2], msg[3], msg[4], msg[5]);
+				requestAddMovie(msg[2], msg[3], msg[4], Arrays.copyOfRange(msg, 5, msg.length));
 				break;
 			case "remmovie":
 				requestRemoveMovie(msg[2]);
 				break;
 			case "changeprice":
 				requestChangePrice(msg[2], msg[3]);
+				break;
+			default:
+				connections.send(connectionId, "ERROR request "+msg[1]+" not legal!!");
 		}
 	}
 
@@ -165,27 +180,35 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestInfo(String movieName)
 	{
-		for (Movies.Movie movie : Movies.getMovies())
-			if (movie.getName().equals(movieName))
-			{
-				StringBuilder bannedCountries=new StringBuilder();
-				for (String countries : movie.getBannedCountries())
-					bannedCountries.append("\""+countries+"\" ");
-				Movies.getReadWriteLock().readLock().unlock();
-				connections.send(connectionId, "ACK \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" "+bannedCountries);
-				return;
-			}
-		Movies.getReadWriteLock().readLock().unlock();
+		if (connections.getConnectionHandler(connectionId).isLoggedIn())
+		{
+			for (Movies.Movie movie : Movies.getMovies())
+				if (movie.getName().equals(movieName))
+				{
+					StringBuilder bannedCountries=new StringBuilder();
+					for (String countries : movie.getBannedCountries())
+						bannedCountries.append("\""+countries+"\" ");
+					Movies.getReadWriteLock().readLock().unlock();
+					connections.send(connectionId, "ACK \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" "+bannedCountries);
+					return;
+				}
+			Movies.getReadWriteLock().readLock().unlock();
+		}
 		connections.send(connectionId, "ERROR request info failed");
 	}
 
 	private void requestInfo()
 	{
 		StringBuilder output=new StringBuilder();
-		for (Movies.Movie movie : Movies.getMovies())
-			output.append("\""+movie.getName()+"\""+" ");
-		Movies.getReadWriteLock().readLock().unlock();
-		connections.send(connectionId, "ACK"+output.toString());
+		if (connections.getConnectionHandler(connectionId).isLoggedIn())
+		{
+			for (Movies.Movie movie : Movies.getMovies())
+				output.append("\""+movie.getName()+"\""+" ");
+			Movies.getReadWriteLock().readLock().unlock();
+			connections.send(connectionId, "ACK "+output.toString());
+			return;
+		}
+		connections.send(connectionId, "ERROR request info failed");
 	}
 
 	private void requestRent(String movieName)
@@ -258,17 +281,16 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 									return;
 								}
 								movie1.release();
+								Movies.getReadWriteLock().readLock().unlock();
 							}
 					}
-//					break;
 				}
 			}
-		Movies.getReadWriteLock().readLock().unlock();
 		Users.getReadWriteLock().readLock().unlock();
 		connections.send(connectionId, "ERROR request return failed");
 	}
 
-	private void requestAddMovie(String movieName, String amount, String price, String bannedCountry)
+	private void requestAddMovie(String movieName, String amount, String price, String[] bannedCountry)
 	{
 		if (Integer.parseInt(amount)>0 || Integer.parseInt(price)>0)
 		{
@@ -286,9 +308,10 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 					Movies.getReadWriteLock().readLock().unlock();
 					if (!found)
 					{
-						bannedCountry=bannedCountry.trim().substring(1, bannedCountry.length()-2);
-						List<String> list=new ArrayList<>(Arrays.asList(bannedCountry.split("\" \"")));
+						List<String> list=new ArrayList<>(Arrays.asList(bannedCountry));
 						String id=""+(Integer.parseInt(Movies.getMovies().get(Movies.getMovies().size()-1).getId())+1);
+						Movies.getReadWriteLock().readLock().unlock();
+						Movies.getReadWriteLock().readLock().unlock();
 						Movies.add(new Movies.Movie(id, movieName, price, list, amount, amount));
 						Users.getReadWriteLock().readLock().unlock();
 						connections.send(connectionId, "ACK addmovie \""+movieName+"\" success");

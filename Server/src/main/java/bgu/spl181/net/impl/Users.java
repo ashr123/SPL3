@@ -13,7 +13,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -32,7 +31,6 @@ public class Users
 				try
 				{
 					me=gson.fromJson(new JsonReader(new FileReader("Users.json")), Users.class);
-//					users=new ConcurrentLinkedQueue<>(users);
 				}
 				catch (FileNotFoundException e)
 				{

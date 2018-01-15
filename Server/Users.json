@@ -5,7 +5,7 @@
       "password": "potato",
       "type": "admin",
       "country": "united states",
-      "balance": "0",
+      "balance": "4990",
       "movies": []
     },
     {
@@ -56,6 +56,14 @@
       "type": "normal",
       "country": "",
       "balance": "0",
+      "movies": []
+    },
+    {
+      "username": "TOREN",
+      "password": "123456",
+      "type": "normal",
+      "country": "",
+      "balance": "3",
       "movies": []
     }
   ]

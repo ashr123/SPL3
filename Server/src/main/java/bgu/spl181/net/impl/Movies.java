@@ -29,7 +29,7 @@ public class Movies
 			if (me==null)
 				try
 				{
-					me=gson.fromJson(new JsonReader(new FileReader("Movies.json")), Users.class);
+					me=gson.fromJson(new JsonReader(new FileReader("Movies.json")), Movies.class);
 				}
 				catch (FileNotFoundException e)
 				{
@@ -51,7 +51,7 @@ public class Movies
 		private final List<String> bannedCountries;
 		private String availableAmount;
 		private String totalAmount;
-		private final transient Semaphore semaphore=new Semaphore(1, true);
+		private transient Semaphore semaphore/*=new Semaphore(1, true)*/;
 
 		public Movie(String id, String name, String price, List<String> bannedCountries, String availableAmount, String totalAmount)
 		{
@@ -61,6 +61,7 @@ public class Movies
 			this.bannedCountries=bannedCountries;
 			this.availableAmount=availableAmount;
 			this.totalAmount=totalAmount;
+			//semaphore=new Semaphore(1, true);
 		}
 
 		public String getId()
@@ -105,10 +106,12 @@ public class Movies
 			return totalAmount;
 		}
 
-		public void acquire()
+		public synchronized void acquire()
 		{
 			try
 			{
+				if (semaphore==null)
+					semaphore=new Semaphore(1, true);
 				semaphore.acquire();
 			}
 			catch (InterruptedException e)
