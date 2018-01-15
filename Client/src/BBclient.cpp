@@ -1,8 +1,6 @@
 #include "../include/connectionHandler.h"
 #include <boost/thread.hpp>
 
-using namespace std;
-
 bool toBeContinued = true;
 
 class Task
