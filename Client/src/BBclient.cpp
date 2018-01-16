@@ -52,7 +52,7 @@ public:
 			{
 				toBeContinued=false;
 				connectionHandler.close();
-				cout<<"Ready to exit, press enter"<<endl;
+				cout<<"Ready to exit. press enter"<<endl;
 				return;
 			}
 		}
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 		cin.getline(buf, bufSize);
 		string line(buf);
 		unsigned long len=line.length();
-		if (!connectionHandler.sendLine(line))
+		if (toBeContinued && !connectionHandler.sendLine(line))
 		{
 			cout<<"Disconnected. Exiting...\n"<<endl;
 			break;
