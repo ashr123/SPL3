@@ -77,8 +77,6 @@ public class Movies
 
 		public void setPrice(String price)
 		{
-			if (semaphore.availablePermits()!=0)
-				throw new IllegalMonitorStateException("Didn't acquired a permit!!");
 			this.price=price;
 			toJson();
 		}
@@ -95,8 +93,6 @@ public class Movies
 
 		public void setAvailableAmount(String availableAmount)
 		{
-			if (semaphore.availablePermits()!=0)
-				throw new IllegalMonitorStateException("Didn't acquired a permit!!");
 			this.availableAmount=availableAmount;
 			toJson();
 		}
