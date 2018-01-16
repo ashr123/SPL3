@@ -12,6 +12,7 @@ import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -55,7 +56,7 @@ public class Users
 			this.type=type;
 			this.country=country;
 			this.balance=balance;
-			this.movies=new ArrayList<>();
+			this.movies=Collections.synchronizedList(new ArrayList<>());
 		}
 
 		public boolean addMovie(Movie movie)
