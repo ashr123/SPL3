@@ -205,7 +205,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 			for (Movies.Movie movie : Movies.getMovies())
 				output.append("\""+movie.getName()+"\""+" ");
 			Movies.getReadWriteLock().readLock().unlock();
-			connections.send(connectionId, "ACK "+output.substring(0, output.length()-1));
+			connections.send(connectionId, "ACK info "+output.substring(0, output.length()-1));
 			return;
 		}
 		connections.send(connectionId, "ERROR request info failed");
