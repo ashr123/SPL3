@@ -189,7 +189,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 					for (String countries : movie.getBannedCountries())
 						bannedCountries.append("\""+countries+"\" ");
 					Movies.getReadWriteLock().readLock().unlock();
-					connections.send(connectionId, "ACK \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" "+bannedCountries.substring(0, bannedCountries.length()-1));
+					connections.send(connectionId, "ACK info \""+movieName+"\" "+movie.getAvailableAmount()+" "+movie.getPrice()+" "+bannedCountries.substring(0, bannedCountries.length()-1));
 					return;
 				}
 			Movies.getReadWriteLock().readLock().unlock();
