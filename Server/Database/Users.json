@@ -63,8 +63,13 @@
       "password": "123456",
       "type": "normal",
       "country": "",
-      "balance": "3",
-      "movies": []
+      "balance": "43",
+      "movies": [
+        {
+          "id": "1",
+          "name": "The Godfather"
+        }
+      ]
     }
   ]
 }

@@ -4,11 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -18,7 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class Movies
 {
 	private static List<Movie> movies;
-	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock(true);
+	private static final transient ReentrantReadWriteLock readWriteLock=new ReentrantReadWriteLock(true);
 	private static transient Movies me;
 	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
@@ -27,11 +23,11 @@ public class Movies
 		synchronized (Movies.class)
 		{
 			if (me==null)
-				try
+				try(JsonReader jsonReader=new JsonReader(new FileReader("./Database/Movies.json")))
 				{
-					me=gson.fromJson(new JsonReader(new FileReader("Movies.json")), Movies.class);
+					me=gson.fromJson(jsonReader, Movies.class);
 				}
-				catch (FileNotFoundException e)
+				catch (IOException e)
 				{
 					e.printStackTrace();
 				}
@@ -81,6 +77,8 @@ public class Movies
 
 		public void setPrice(String price)
 		{
+			if (semaphore.availablePermits()!=0)
+				throw new IllegalMonitorStateException("Didn't acquired a permit!!");
 			this.price=price;
 			toJson();
 		}
@@ -97,6 +95,8 @@ public class Movies
 
 		public void setAvailableAmount(String availableAmount)
 		{
+			if (semaphore.availablePermits()!=0)
+				throw new IllegalMonitorStateException("Didn't acquired a permit!!");
 			this.availableAmount=availableAmount;
 			toJson();
 		}
@@ -141,6 +141,8 @@ public class Movies
 
 	public static boolean add(Movie movie)
 	{
+//		if (readWriteLock.getReadHoldCount()==0)
+//			throw new IllegalMonitorStateException("Didn't acquired a permit!!");
 		readWriteLock.writeLock().lock();
 		boolean b=movies.add(movie);
 		toJson();
@@ -156,7 +158,7 @@ public class Movies
 
 	private static void toJson()
 	{
-		try (Writer writer=new FileWriter("Movies.json"))
+		try (Writer writer=new FileWriter("./Database/Movies.json"))
 		{
 			gson.toJson(me, writer);
 		}

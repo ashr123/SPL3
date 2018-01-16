@@ -28,11 +28,11 @@ public class Users
 		synchronized (Users.class)
 		{
 			if (me==null)
-				try
+				try(JsonReader jsonReader=new JsonReader(new FileReader("./Database/Users.json")))
 				{
-					me=gson.fromJson(new JsonReader(new FileReader("Users.json")), Users.class);
+					me=gson.fromJson(jsonReader, Users.class);
 				}
-				catch (FileNotFoundException e)
+				catch (IOException e)
 				{
 					e.printStackTrace();
 				}
@@ -186,7 +186,7 @@ public class Users
 
 	private static void toJson()
 	{
-		try (Writer writer=new FileWriter("Users.json"))
+		try (Writer writer=new FileWriter("./Database/Users.json"))
 		{
 			gson.toJson(me, writer);
 		}
