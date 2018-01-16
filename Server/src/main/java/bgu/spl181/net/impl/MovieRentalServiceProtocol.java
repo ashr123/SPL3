@@ -287,7 +287,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 
 	private void requestAddMovie(String movieName, String amount, String price, String[] bannedCountry)
 	{
-		if (Integer.parseInt(amount)>0 || Integer.parseInt(price)>0)
+		if (Integer.parseInt(amount)>0 && Integer.parseInt(price)>0)
 		{
 			for (Users.User user : Users.getUsers())
 			{
