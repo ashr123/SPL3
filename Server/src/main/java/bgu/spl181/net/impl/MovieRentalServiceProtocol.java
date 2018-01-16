@@ -161,7 +161,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 				return;
 			}
 		Users.getReadWriteLock().readLock().unlock();
-		connections.send(connectionId, "ERROR request balance info failed");
+		connections.send(connectionId, "ERROR request balance failed");
 	}
 
 	private void requestBalanceAdd(String amount)
