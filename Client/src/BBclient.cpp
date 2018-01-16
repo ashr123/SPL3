@@ -51,8 +51,9 @@ public:
 			if (answer=="ACK signout succeeded")
 			{
 				toBeContinued=false;
-				cout<<"Exiting...\n"<<endl;
-				break;
+				connectionHandler.close();
+				cout<<"Ready to exit, press enter"<<endl;
+				return;
 			}
 		}
 	}
