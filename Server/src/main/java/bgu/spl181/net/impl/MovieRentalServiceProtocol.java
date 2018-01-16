@@ -77,7 +77,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		{
 			String country="";
 			if (msg.length==4 && msg[3].contains("country=\"") && (msg[3].indexOf("\"")!=msg[3].lastIndexOf("\"")))
-				country=msg[3].substring(msg[3].indexOf("\"")+1, msg[3].lastIndexOf("\""));
+				country=msg[3].substring(9);
 			Users.User tmp=new Users.User(msg[1], msg[2], "normal", country, "0");
 			Users.add(tmp);
 			connections.send(connectionId, "ACK registration succeeded");
