@@ -16,20 +16,6 @@ public:
 	{
 		while (true)
 		{
-//			const short bufSize=1024;
-//			char buf[bufSize];
-//			cin.getline(buf, bufSize);
-//			string line(buf);
-//			unsigned long len=line.length();
-//			if (!connectionHandler.sendLine(line))
-//			{
-//				cout<<"Disconnected. Exiting...\n"<<endl;
-//				break;
-//			}
-			// connectionHandler.sendLine(line) appends '\n' to the message. Therefor we send len+1 bytes.
-//			cout<<"Sent "<<len+1<<" bytes to server"<<endl;
-			
-			
 			// We can use one of three options to read data from the server:
 			// 1. Read a fixed number of characters
 			// 2. Read a line (up to the newline character using the getLine() buffered reader
@@ -64,9 +50,6 @@ public:
 */
 int main(int argc, char *argv[])
 {
-	//boost::mutex _mutex;
-	
-	
 	if (argc<3)
 	{
 		cerr<<"Usage: "<<argv[0]<<" host port"<<endl<<endl;
@@ -90,7 +73,6 @@ int main(int argc, char *argv[])
 		char buf[bufSize];
 		cin.getline(buf, bufSize);
 		string line(buf);
-		unsigned long len=line.length();
 		if (toBeContinued && !connectionHandler.sendLine(line))
 		{
 			cout<<"Disconnected. Exiting...\n"<<endl;

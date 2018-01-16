@@ -45,7 +45,7 @@ bool ConnectionHandler::getBytes(char bytes[], unsigned int bytesToRead)
 	}
 	catch (exception &e)
 	{
-		cerr<<"recv failed (Error: "<<e.what()<<')'<<endl;
+		//cerr<<"recv failed (Error: "<<e.what()<<')'<<endl;
 		return false;
 	}
 	return true;
@@ -64,7 +64,7 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite)
 	}
 	catch (exception &e)
 	{
-		cerr<<"recv failed (Error: "<<e.what()<<')'<<endl;
+		//cerr<<"recv failed (Error: "<<e.what()<<')'<<endl;
 		return false;
 	}
 	return true;
