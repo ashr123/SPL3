@@ -271,17 +271,12 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 							if (movie1.getName().equals(movieName))
 							{
 								movie1.acquire();
-								if (Integer.parseInt(movie1.getAvailableAmount())>0)
-								{
-									movie1.setAvailableAmount(""+(Integer.parseInt(movie1.getAvailableAmount())+1));
-									movie1.release();
-									Movies.getReadWriteLock().readLock().unlock();
-									Users.getReadWriteLock().readLock().unlock();
-									connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie1.getAvailableAmount()+" "+movie1.getPrice()+" ");
-									return;
-								}
+								movie1.setAvailableAmount(""+(Integer.parseInt(movie1.getAvailableAmount())+1));
 								movie1.release();
 								Movies.getReadWriteLock().readLock().unlock();
+								Users.getReadWriteLock().readLock().unlock();
+								connections.broadcast("BROADCAST movie \""+movieName+"\" "+movie1.getAvailableAmount()+" "+movie1.getPrice()+" ");
+								return;
 							}
 					}
 				}
