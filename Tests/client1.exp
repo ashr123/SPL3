@@ -1,0 +1,44 @@
+#!/bin/expect -f
+log_user 1
+set timeout -1
+proc Test { command errorMessage error expected } {
+    send_user "TEST-Client1----------$command----Expecting- $expected\n"
+    send $command\r
+    expect {
+         -re $expected* { if { [string match "ACK*" $expected ] } { if {[string match "*REQUEST rent*" $command ] || [ string match "REQUEST return*" $command ] || [ string match "REQUEST addmovie*" $command ] || [ string match "REQUEST remmovie*" $command ] || [ string match "REQUEST changeprice*" $command ] } {
+                    send_user "TEST------expecting BROADCAST...\n"
+                    expect {
+                        -re BROADCAST* { send_user "TEST----------success\n"}
+                        }
+                    } else { send_user "TEST----------success\n"}
+            } else { send_user "TEST----------success\n"}
+        }
+        -re $error* {send_user "TEST----------failed: $errorMessage\n"; exit 1}
+        eof {exit 0}
+    }
+}
+spawn bin/BBclient 127.0.0.1 7777
+Test "LOGIN client1 client1" "not loggedin" "ACK" "ERROR login failed"
+Test "REGISTER client1 client1 country=\"iran\"" "should be successful" "ERROR" "ACK registration succeeded"
+Test "LOGIN client1 client1" "should be successful" "ERROR" "ACK login succeeded"
+Test "LOGIN client1 client1" "already loggedin" "ACK" "ERROR login failed"
+Test "REQUEST addmovie \"not admin\" 1 1" "user is not admin" "ACK" "ERROR request addmovie failed"
+Test "REQUEST remmovie \"movie1\"" "user is not admin" "ACK" "ERROR request remmovie failed"
+Test "REQUEST changeprice \"movie1\" 2" "user is not admin" "ACK" "ERROR request changeprice failed"
+Test "REQUEST balance info" "should be successful" "ERROR" "ACK balance 0"
+Test "REQUEST balance add 100" "should be successful" "ERROR" "ACK balance 100 added 100"
+Test "REQUEST rent \"movie1\"" "banned country" "ACK" "ERROR request rent failed"
+Test "REQUEST return \"movie1\"" "client1 does not have movie1" "ACK" "ERROR request return failed"
+Test "REQUEST rent \"movie2\"" "should be successful" "ERROR" "ACK rent \"movie2\" success";#-BROADCAST movie \"movie2\" 1 1
+Test "REQUEST rent \"movie2\"" "client1 already have movie2" "ACK" "ERROR request rent failed"
+Test "REQUEST return \"movie1\"" "client1 does not have movie1" "ACK" "ERROR request return failed"
+Test "REQUEST return \"movie2\"" "should be successful" "ERROR" "ACK return \"movie2\" success";# -BROADCAST movie \"movie2\" 2 1
+Test "REQUEST balance info" "should be successful" "ERROR" "ACK balance 99"
+#Test "REQUEST info" "should be successful" "ERROR" "ACK info \"The Pursuit Of Happyness\" \"The Notebook\" \"Justice League\" \"The Godfather\" \"movie3\" \"high price\" \"movie1\" \"movie2\""
+Test "REQUEST info \"movie1\"" "should be successful" "ERROR" "ACK info \"movie1\" 1 10 \"iran\" \"israel\""
+Test "REQUEST info \"movie3\"" "should be successful" "ERROR" "ACK info \"movie3\" 1 1"
+Test "REQUEST info \"does not exists\"" "movie is not in the system" "ACK" "ERROR request info failed"
+Test "REQUEST return \"does not exists\"" "movie is not in the system" "ACK" "ERROR request return failed"
+Test "REQUEST rent \"high price\"" "client1 have less than 100 balance" "ACK" "ERROR request rent failed"
+Test "REQUEST rent \"The Notebook\"" "no copies available" "ACK" "ERROR request rent failed"
+Test "SIGNOUT" "should be successful" "ERROR" "ACK signout succeeded"

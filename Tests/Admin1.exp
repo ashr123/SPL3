@@ -1,0 +1,64 @@
+#!/bin/expect -f
+log_user 1
+set timeout -1
+proc Test { command expected error errorMessage } {
+    send_user "TEST-Admin----------$command----Expecting- $expected\n"
+    send $command\r
+    expect {
+        -re $expected* { if { [string match "ACK*" $expected ] } { if {[string match "*REQUEST rent*" $command ] || [ string match "REQUEST return*" $command ] || [ string match "REQUEST addmovie*" $command ] || [ string match "REQUEST remmovie*" $command ] || [ string match "REQUEST changeprice*" $command ] } {
+                    send_user "TEST------expecting BROADCAST...\n"
+                    expect {
+                        -re BROADCAST* { send_user "TEST----------success\n"}
+                        }
+                    } else { send_user "TEST----------success\n"}
+            } else { send_user "TEST----------success\n"}
+        }
+        -re $error* {send_user "TEST----------failed: $errorMessage\n"; exit 1}
+        eof {exit 0}
+    }
+}
+spawn bin/BBclient 127.0.0.1 7777
+Test "REQUEST rent \"dont care\"" "ERROR request rent failed" "ACK" "not loggedin"
+Test "REQUEST return \"dont care\"" "ERROR request return failed" "ACK" "not loggedin"
+Test "REQUEST addmovie \"dont care\" 1 1 \"dont care\"" "ERROR request addmovie failed" "ACK" "not loggedin"
+Test "REQUEST remmovie \"dont care\"" "ERROR request remmovie failed" "ACK" "not loggedin"
+Test "REQUEST changeprice \"dont care\" 50" "ERROR request changeprice failed" "ACK" "not loggedin"
+Test "LOGIN john potato" "ACK login succeeded" "ERROR" "should be successful"
+Test "REQUEST info" "ACK info \"The Godfather\" \"The Pursuit Of Happyness\" \"The Notebook\" \"Justice League\"" "ERROR" "should be successful"
+Test "REQUEST balance info" "ACK balance 0" "ERROR" "should be successful"
+Test "REQUEST balance add 150" "ACK balance 150 added 150" "ERROR" "should be successful"
+Test "REQUEST rent \"The Godfather\"" "ACK rent \"The Godfather\"" "ERROR" "should be successful" ;# -BROADCAST movie "The Godfather" 0 25
+Test "REQUEST balance info" "ACK balance 125" "ERROR" "should be successful"
+Test "REQUEST remmovie \"The Godfather\"" "ERROR request remmovie failed" "ACK" "cannot remove movie that is rented"
+Test "REQUEST return \"The Godfather\"" "ACK return \"The Godfather\"" "ERROR" "should be successful" ;# -BROADCAST movie "The Godfather" 1 25
+Test "REQUEST remmovie \"The Godfather\"" "ERROR request remmovie failed" "ACK" "cannot remove movie that is rented"
+Test "REQUEST changeprice \"The Godfather\" 50" "ACK changeprice \"The Godfather\" success" "ERROR" "should be successful" ;#-BROADCAST movie "The Godfather" 1 50
+Test "REQUEST addmovie \"to remove\" 1 1000 \"usa\"" "ACK addmovie \"to remove\" success" "ERROR" "should be successful" ;# -BROADCAST movie "to remove" 1 1000 
+Test "REQUEST rent \"to remove\"" "ERROR request rent failed" "ACK" "john have less than 1000 balance"
+Test "REQUEST balance info" "ACK balance 125" "ERROR" "should be successful"
+Test "REQUEST balance add 1000" "ACK balance 1125 added 1000" "ERROR" "should be successful"
+Test "REQUEST rent \"to remove\"" "ACK rent \"to remove\" success" "ERROR" "should be successful" ;#-BROADCAST movie "to remove" 0 1000
+Test "REQUEST balance info" "ACK balance 125" "ERROR" "should be successful"
+Test "REQUEST remmovie \"to remove\"" "ERROR request remmovie failed" "ACK" "cannot remove movie that is rented"
+Test "REQUEST return \"to remove\"" "ACK return \"to remove\" success" "ERROR" "should be successful" ;#-BROADCAST movie "to remove" 1 1000
+Test "REQUEST remmovie \"to remove\"" "ACK remmovie \"to remove\" success" "ERROR" "should be successful" ;#-BROADCAST movie "to remove" removed
+Test "REQUEST addmovie \"movie1\" 1 10 \"iran\" \"israel\"" "ACK addmovie \"movie1\" success" "ERROR" "should be successful" ;#-BROADCAST movie "movie1" 1 10
+Test "REQUEST addmovie \"movie2\" 2 1" "ACK addmovie \"movie2\" success" "ERROR" "should be successful" ;#-BROADCAST movie "movie2" 2 1
+Test "REQUEST addmovie \"movie3\" 1 1" "ACK addmovie \"movie3\" success" "ERROR" "should be successful" ;#-BROADCAST movie "movie3" 1 1
+Test "REQUEST addmovie \"movie1\" 1 10 \"iran\" \"israel\"" "ERROR request addmovie failed" "ACK" "cannot add movie which already exists"
+Test "REQUEST addmovie \"illegal amount\" -1 1" "ERROR request addmovie failed" "ACK" "negative available copies"
+Test "REQUEST addmovie \"illegal price\" 1 -1" "ERROR request addmovie failed" "ACK" "negative price"
+Test "REQUEST addmovie \"high price\" 1 100" "ACK addmovie \"high price\" success" "ERROR" "should be successful" ;#-BROADCAST movie "high price" 1 100
+Test "SIGNOUT" "ACK signout succeeded" "ERROR" "should be successful"
+
+
+
+
+
+
+
+
+
+
+
+
