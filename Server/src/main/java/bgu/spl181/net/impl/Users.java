@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -21,6 +20,7 @@ public class Users
 	private static Collection<User> users;
 	private static final transient ReadWriteLock readWriteLock=new ReentrantReadWriteLock(true);
 	private static transient Users me;
+	private static final transient String fileName="./Database/Users.json";
 	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
 	static
@@ -28,7 +28,7 @@ public class Users
 		synchronized (Users.class)
 		{
 			if (me==null)
-				try(JsonReader jsonReader=new JsonReader(new FileReader("./Database/Users.json")))
+				try(JsonReader jsonReader=new JsonReader(new FileReader(fileName)))
 				{
 					me=gson.fromJson(jsonReader, Users.class);
 				}
@@ -186,7 +186,7 @@ public class Users
 
 	private static void toJson()
 	{
-		try (Writer writer=new FileWriter("./Database/Users.json"))
+		try (Writer writer=new FileWriter(fileName))
 		{
 			gson.toJson(me, writer);
 		}

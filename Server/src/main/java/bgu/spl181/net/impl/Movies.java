@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 
-import java.io.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -16,6 +19,7 @@ public class Movies
 	private static List<Movie> movies;
 	private static final transient ReentrantReadWriteLock readWriteLock=new ReentrantReadWriteLock(true);
 	private static transient Movies me;
+	private static final transient String fileName="./Database/Movies.json";
 	private static final transient Gson gson=new GsonBuilder().excludeFieldsWithModifiers(Modifier.TRANSIENT).setPrettyPrinting().create();
 
 	static
@@ -23,7 +27,7 @@ public class Movies
 		synchronized (Movies.class)
 		{
 			if (me==null)
-				try(JsonReader jsonReader=new JsonReader(new FileReader("./Database/Movies.json")))
+				try(JsonReader jsonReader=new JsonReader(new FileReader(fileName)))
 				{
 					me=gson.fromJson(jsonReader, Movies.class);
 				}
@@ -57,7 +61,6 @@ public class Movies
 			this.bannedCountries=bannedCountries;
 			this.availableAmount=availableAmount;
 			this.totalAmount=totalAmount;
-			//semaphore=new Semaphore(1, true);
 		}
 
 		public String getId()
@@ -154,7 +157,7 @@ public class Movies
 
 	private static void toJson()
 	{
-		try (Writer writer=new FileWriter("./Database/Movies.json"))
+		try (Writer writer=new FileWriter(fileName))
 		{
 			gson.toJson(me, writer);
 		}
