@@ -59,13 +59,13 @@ int main(int argc, char *argv[])
 	long port=strtol(argv[2], nullptr, 10);
 	
 	ConnectionHandler connectionHandler(host, port);
-	Task task(connectionHandler);
-	boost::thread thread(&Task::run, &task);
 	if (!connectionHandler.connect())
 	{
 		cerr<<"Cannot connect to "<<host<<":"<<port<<endl;
 		return 1;
 	}
+	Task task(connectionHandler);
+	boost::thread thread(&Task::run, &task);
 	//From here we will see the rest of the echo client implementation:
 	while(toBeContinued)
 	{
