@@ -109,6 +109,7 @@ public class MovieRentalServiceProtocol implements BidiMessagingProtocol<String>
 		if (connections.getConnectionHandler(connectionId).isLoggedIn())
 		{
 			connections.send(connectionId, "ACK signout succeeded");
+			shouldTerminate=true;
 			connections.disconnect(connectionId);
 		}
 		else
